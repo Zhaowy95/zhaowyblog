@@ -132,7 +132,15 @@ tags: [${tagsArray.map((tag: string) => `"${tag}"`).join(', ')}]
 ${post.content}`;
 
       // 使用 GitHub API 直接提交文件
-      const githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+      // 优先使用编译期注入的 NEXT_PUBLIC_GITHUB_TOKEN；
+      // 若未注入（例如 CDN 缓存旧构建），则尝试从 public/runtime-env.json 读取运行时变量。
+      let githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+      if (!githubToken) {
+        try {
+          const runtime = await fetch('/runtime-env.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null);
+          githubToken = runtime?.NEXT_PUBLIC_GITHUB_TOKEN;
+        } catch {}
+      }
       
       if (!githubToken) {
         setSaveStatus("❌ 请配置 GitHub Token 以实现自动发布功能");

@@ -21,6 +21,10 @@ jobs:
     env:
       NEXT_TELEMETRY_DISABLED: 1
       NODE_OPTIONS: --max_old_space_size=4096
+      # Expose GitHub token (fine-grained, repo:contents:write) to the build so
+      # the client bundle can read process.env.NEXT_PUBLIC_GITHUB_TOKEN.
+      # Define this secret in: Settings → Secrets and variables → Actions
+      NEXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.NEXT_PUBLIC_GITHUB_TOKEN }}
     
     steps:
     - name: Checkout
@@ -37,6 +41,12 @@ jobs:
       
     - name: Build
       run: npm run build
+
+    - name: Write runtime env for client fallback
+      run: |
+        cat > public/runtime-env.json <<EOF
+        {"NEXT_PUBLIC_GITHUB_TOKEN":"${{ secrets.NEXT_PUBLIC_GITHUB_TOKEN }}"}
+        EOF
 
     - name: Generate sitemap and RSS
       run: |
