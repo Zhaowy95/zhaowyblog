@@ -14,7 +14,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import 'highlight.js/styles/github-dark.min.css'
 import { GoToTop } from "@/components/go-to-top"
-import ValineComments from "@/components/comments/ValineComments"
+import ValineCommentsDebug from "@/components/comments/ValineCommentsDebug"
 import 'katex/dist/katex.min.css';
 import { config } from "@/lib/config";
 
@@ -117,7 +117,7 @@ export default async function BlogPage(props: BlogsPageProps) {
         </div>
 
         {/* 文章评论 */}
-        <ValineComments articleId={blog.slug} title={blog.title} />
+        <ValineCommentsDebug articleId={blog.slug} title={blog.title} />
       </div>
       <div className="hidden text-sm xl:block">
         <div className="sticky top-16 -mt-6 h-[calc(100vh-3.5rem)]">
