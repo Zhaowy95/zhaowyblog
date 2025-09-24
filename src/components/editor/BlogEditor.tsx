@@ -110,8 +110,8 @@ export default function BlogEditor() {
 
     setIsSaving(true);
     try {
-      // 调用API保存文章到文件系统
-      const response = await fetch('/api/save-blog', {
+      // 首先尝试本地文件系统保存
+      let response = await fetch('/api/save-blog', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,13 +125,33 @@ export default function BlogEditor() {
         }),
       });
 
+      // 如果本地保存失败，尝试GitHub API保存
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || '保存失败');
+        console.log('本地保存失败，尝试GitHub API保存');
+        response = await fetch('/api/save-blog-github', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: post.title,
+            content: post.content,
+            summary: post.summary,
+            date: post.date,
+            featured: post.featured,
+          }),
+        });
       }
 
-      await response.json();
-      setSaveStatus("文章发布成功！已保存到本地文件系统。");
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API错误响应:', errorData);
+        throw new Error(errorData.error || errorData.details || '保存失败');
+      }
+
+      const result = await response.json();
+      console.log('API成功响应:', result);
+      setSaveStatus("文章发布成功！已保存到文件系统。");
       
       // 清除草稿
       const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");

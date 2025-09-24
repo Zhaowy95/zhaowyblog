@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('API调用开始');
+    console.log('GitHub API调用开始');
     const body = await request.json();
     console.log('请求体:', body);
     
@@ -23,18 +21,6 @@ export async function POST(request: NextRequest) {
     const fileName = `blog-${timestamp}.md`;
     console.log('生成文件名:', fileName);
 
-    // 确保目录存在
-    const blogDir = join(process.cwd(), 'src', 'content', 'blog');
-    console.log('博客目录路径:', blogDir);
-    
-    try {
-      await mkdir(blogDir, { recursive: true });
-      console.log('目录创建成功');
-    } catch (dirError) {
-      console.error('创建目录失败:', dirError);
-      throw dirError;
-    }
-
     // 生成Markdown内容
     const markdownContent = `---
 title: "${title}"
@@ -47,23 +33,45 @@ ${content}`;
 
     console.log('Markdown内容生成完成');
 
-    // 写入文件
-    const filePath = join(blogDir, fileName);
-    console.log('文件路径:', filePath);
-    
-    try {
-      await writeFile(filePath, markdownContent, 'utf-8');
-      console.log('文件写入成功');
-    } catch (writeError) {
-      console.error('文件写入失败:', writeError);
-      throw writeError;
+    // 使用GitHub API保存文件
+    const githubToken = process.env.GITHUB_TOKEN;
+    if (!githubToken) {
+      console.error('GitHub token未配置');
+      return NextResponse.json(
+        { error: 'GitHub token未配置，无法保存文件' },
+        { status: 500 }
+      );
     }
+
+    const githubApiUrl = 'https://api.github.com/repos/Zhaowy95/zhaowyblog/contents/src/content/blog/' + fileName;
+    
+    const response = await fetch(githubApiUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${githubToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: `Add blog post: ${title}`,
+        content: Buffer.from(markdownContent, 'utf-8').toString('base64'),
+        branch: 'main'
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('GitHub API错误:', errorData);
+      throw new Error(`GitHub API错误: ${errorData.message || '未知错误'}`);
+    }
+
+    const result = await response.json();
+    console.log('GitHub API成功响应:', result);
 
     return NextResponse.json({
       success: true,
       message: '文章保存成功',
       fileName: fileName,
-      filePath: filePath
+      githubUrl: result.content.html_url
     });
 
   } catch (error) {
