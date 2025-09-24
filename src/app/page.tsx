@@ -87,15 +87,15 @@ export default function Home() {
               <div key={link.name} className="flex items-center">
                 {link.name === "公众号" ? (
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                    <img src="/wechat.png" alt="公众号" className="w-6 h-6" loading="lazy" decoding="async" />
+                    <img src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wechat.png`} alt="公众号" className="w-6 h-6" loading="lazy" decoding="async" />
                   </a>
                 ) : link.name === "GitHub" ? (
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                    <img src="/github.png" alt="GitHub" className="w-6 h-6" loading="lazy" decoding="async" />
+                    <img src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/github.png`} alt="GitHub" className="w-6 h-6" loading="lazy" decoding="async" />
                   </a>
                 ) : link.name === "小红书" ? (
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                    <img src="/redbook.png" alt="小红书" className="w-6 h-6" loading="lazy" decoding="async" />
+                    <img src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/redbook.png`} alt="小红书" className="w-6 h-6" loading="lazy" decoding="async" />
                   </a>
                 ) : (
                   <Link href={link.href} className="underline underline-offset-4">

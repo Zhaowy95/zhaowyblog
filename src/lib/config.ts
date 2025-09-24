@@ -1,3 +1,5 @@
+const basePath = process.env.NODE_ENV === 'production' ? '/zhaowyblog' : '';
+
 export const config = {
   site: {
     title: "Zhao某人",
@@ -8,19 +10,19 @@ export const config = {
     baseUrl: "https://zhaowy95.github.io/zhaowyblog/",
     image: "https://zhaowy95.github.io/zhaowyblog/avatar.jpg",
     favicon: {
-      ico: "/boyicon.png",
-      png: "/boyicon.png",
-      svg: "/boyicon.png",
-      appleTouchIcon: "/boyicon.png",
+      ico: `${basePath}/boyicon.png`,
+      png: `${basePath}/boyicon.png`,
+      svg: `${basePath}/boyicon.png`,
+      appleTouchIcon: `${basePath}/boyicon.png`,
     },
-    manifest: "/site.webmanifest",
+    manifest: `${basePath}/site.webmanifest`,
     rss: {
       title: "Zhao某人",
       description: "专注于产品经理转独立开发之路",
       feedLinks: {
-        rss2: "/rss.xml",
-        json: "/feed.json",
-        atom: "/atom.xml",
+        rss2: `${basePath}/rss.xml`,
+        json: `${basePath}/feed.json`,
+        atom: `${basePath}/atom.xml`,
       },
     },
   },
@@ -28,12 +30,12 @@ export const config = {
     name: "zhaowy",
     email: "zhaowy95@163.com",
     bio: "专注于产品经理转独立开发之路",
-    avatar: "/avatar.jpg",
+    avatar: `${basePath}/avatar.jpg`,
   },
   social: {
     github: "https://github.com/Zhaowy95",
     xiaohongshu: "https://www.xiaohongshu.com/user/profile/5c7f632d000000001600761a",
-    wechat: "/images/wechat-qr.png",
+    wechat: `${basePath}/images/wechat-qr.png`,
   },
   giscus: {
     repo: "guangzhengli/hugo-ladder-exampleSite",

@@ -39,7 +39,7 @@ export default function FeaturedBlogsList({ initialFeaturedBlogs, selectedTag }:
                   </h2>
                   {/* 推荐文章图标 */}
                   <img 
-                    src="/icon_set top.png" 
+                    src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/icon_set top.png`}
                     alt="推荐" 
                     className="w-6 h-4 flex-shrink-0"
                     loading="lazy"

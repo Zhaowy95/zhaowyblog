@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
   basePath: '/zhaowyblog',
-  assetPrefix: '/zhaowyblog/',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/zhaowyblog/' : '',
   images: {
     unoptimized: true,
   },

@@ -65,7 +65,7 @@ export function Header() {
             title="写博客"
           >
             <img 
-              src="/writeblog.png" 
+              src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/writeblog.png`}
               alt="写博客" 
               className="w-8 h-8 hover:opacity-80 transition-opacity"
               loading="eager"
