@@ -1,15 +1,39 @@
+"use client";
+
 import { allBlogs } from "content-collections";
 import Link from "next/link";
 import count from 'word-count'
 import { formatDate } from "@/lib/utils";
+import TagList from "@/components/ui/TagList";
+import { useState } from "react";
 
 export default function BlogPage() {
-  const blogs = allBlogs.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const [selectedTag, setSelectedTag] = useState<string | undefined>();
+  
+  const allBlogsSorted = allBlogs
+    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const filteredBlogs = selectedTag 
+    ? allBlogsSorted.filter((blog: any) => 
+        (blog.tags && blog.tags.includes(selectedTag)) ||
+        (blog.keywords && blog.keywords.includes(selectedTag))
+      )
+    : allBlogsSorted;
+
+  const handleTagClick = (tag: string) => {
+    setSelectedTag(selectedTag === tag ? undefined : tag);
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      {/* 标签展示 */}
+      <div className="mb-8">
+        <TagList onTagClick={handleTagClick} selectedTag={selectedTag} />
+      </div>
+
+      {/* 文章列表 */}
       <div className="space-y-8">
-        {blogs.map((blog: any) => (
+        {filteredBlogs.map((blog: any) => (
           <article 
             key={blog.slug} 
             className=""
@@ -27,6 +51,35 @@ export default function BlogPage() {
                 <p className="text-gray-600 line-clamp-2">
                   {blog.summary}
                 </p>
+                {/* 显示所有标签（包括tags和keywords） */}
+                {((blog.tags && blog.tags.length > 0) || (blog.keywords && blog.keywords.length > 0)) && (
+                  <div className="flex flex-wrap gap-1">
+                    {blog.tags && blog.tags.map((tag: string, index: number) => (
+                      <span 
+                        key={`tag-${index}`} 
+                        className={`px-2 py-1 text-xs rounded ${
+                          selectedTag === tag 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {blog.keywords && blog.keywords.map((keyword: string, index: number) => (
+                      <span 
+                        key={`keyword-${index}`} 
+                        className={`px-2 py-1 text-xs rounded ${
+                          selectedTag === keyword 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </Link>
           </article>

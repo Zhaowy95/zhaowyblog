@@ -14,7 +14,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import 'highlight.js/styles/github-dark.min.css'
 import { GoToTop } from "@/components/go-to-top"
-import ValineCommentsDebug from "@/components/comments/ValineCommentsDebug"
+import ValineComments from "@/components/comments/ValineComments"
 import 'katex/dist/katex.min.css';
 import { config } from "@/lib/config";
 
@@ -53,31 +53,42 @@ export async function generateMetadata({ params }: BlogsPageProps): Promise<Meta
     return {}
   }
 
+  const publishedTime = new Date(blog.date).toISOString();
+  const modifiedTime = blog.updated ? new Date(blog.updated).toISOString() : publishedTime;
+  
   return {
-    title: blog.title,
-    description: blog.title,
+    title: `${blog.title} | ${config.site.title}`,
+    description: blog.summary || blog.title,
     keywords: blog.keywords,
+    authors: [{ name: config.author.name, url: config.site.url }],
     openGraph: {
       title: blog.title,
-      description: blog.title,
-      type: config.seo.openGraph.type,
-      url: absoluteUrl("/" + blog.slug),
+      description: blog.summary || blog.title,
+      type: "article",
+      url: absoluteUrl("/blog/" + blog.slug),
+      siteName: config.site.name,
+      locale: "zh_CN",
+      publishedTime,
+      modifiedTime,
+      authors: [config.author.name],
       images: [
         {
-          url: config.site.image
+          url: config.site.image,
+          width: 1200,
+          height: 630,
+          alt: blog.title,
         },
       ],
     },
     twitter: {
-      card: config.seo.twitter.card,
+      card: "summary_large_image",
       title: blog.title,
-      description: blog.title,
-      images: [
-        {
-          url: config.site.image
-        },
-      ],
+      description: blog.summary || blog.title,
+      images: [config.site.image],
       creator: config.seo.twitter.creator,
+    },
+    alternates: {
+      canonical: absoluteUrl("/blog/" + blog.slug),
     },
   }
 }
@@ -99,14 +110,54 @@ export default async function BlogPage(props: BlogsPageProps) {
 
   const toc = await getTableOfContents(blog.content)
 
-  return (
-    <main className="relative py-6 max-w-full md:max-w-6xl mx-auto lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
-      <div className="max-w-4xl mx-auto w-full px-6">
-        <div className="my-8">
-          <h1 className="text-[32px] font-bold">{blog.title}</h1>
-        </div>
+  // 结构化数据
+  const publishedTime = new Date(blog.date).toISOString();
+  const modifiedTime = blog.updated ? new Date(blog.updated).toISOString() : publishedTime;
+  
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": blog.title,
+    "description": blog.summary || blog.title,
+    "author": {
+      "@type": "Person",
+      "name": config.author.name,
+      "url": config.site.url
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": config.site.name,
+      "url": config.site.url,
+      "logo": {
+        "@type": "ImageObject",
+        "url": config.site.image
+      }
+    },
+    "datePublished": publishedTime,
+    "dateModified": modifiedTime,
+    "url": absoluteUrl("/blog/" + blog.slug),
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": absoluteUrl("/blog/" + blog.slug)
+    },
+    "keywords": blog.keywords?.join(", "),
+    "wordCount": count(blog.content),
+    "inLanguage": "zh-CN"
+  };
 
-        <div className="my-4">
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <main className="relative py-6 max-w-full md:max-w-6xl mx-auto lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
+        <div className="max-w-4xl mx-auto w-full px-6">
+          <div className="my-8">
+            <h1 className="text-[32px] font-bold">{blog.title}</h1>
+          </div>
+
+        <div className="my-4 flex items-center justify-between">
           <p className="text-sm">
             {formatDate(blog.date)} · {count(blog.content)} 字
           </p>
@@ -117,7 +168,7 @@ export default async function BlogPage(props: BlogsPageProps) {
         </div>
 
         {/* 文章评论 */}
-        <ValineCommentsDebug articleId={blog.slug} title={blog.title} />
+        <ValineComments articleId={blog.slug} title={blog.title} />
       </div>
       <div className="hidden text-sm xl:block">
         <div className="sticky top-16 -mt-6 h-[calc(100vh-3.5rem)]">
@@ -127,6 +178,7 @@ export default async function BlogPage(props: BlogsPageProps) {
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </>
   );
 }

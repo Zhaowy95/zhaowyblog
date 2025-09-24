@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('请求体:', body);
     
-    const { title, content, summary, date, featured } = body;
+    const { title, content, summary, date, featured, tags } = body;
 
     if (!title || !content) {
       console.log('验证失败: 标题或内容为空');
@@ -22,11 +22,13 @@ export async function POST(request: NextRequest) {
     console.log('生成文件名:', fileName);
 
     // 生成Markdown内容
+    const tagsArray = tags ? tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag) : [];
     const markdownContent = `---
 title: "${title}"
 date: "${date}"
 summary: "${summary || ''}"
 featured: ${featured || false}
+tags: [${tagsArray.map((tag: string) => `"${tag}"`).join(', ')}]
 ---
 
 ${content}`;

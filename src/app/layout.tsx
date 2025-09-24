@@ -104,7 +104,7 @@ export default function RootLayout({
         {/* 微信浏览器兼容性设置 */}
         <meta name="referrer" content="no-referrer" />
         <meta name="referrer" content="never" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta name="renderer" content="webkit" />
         <meta name="force-rendering" content="webkit" />
         <meta name="x5-orientation" content="portrait" />

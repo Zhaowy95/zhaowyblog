@@ -11,6 +11,7 @@ interface BlogPost {
   date: string;
   status: "draft" | "published";
   featured: boolean;
+  tags: string;
 }
 
 export default function BlogEditor() {
@@ -22,6 +23,7 @@ export default function BlogEditor() {
     date: "",
     status: "draft",
     featured: false,
+    tags: "",
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
@@ -64,6 +66,10 @@ export default function BlogEditor() {
 
   const handleFeaturedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPost(prev => ({ ...prev, featured: e.target.checked }));
+  };
+
+  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPost(prev => ({ ...prev, tags: e.target.value }));
   };
 
 
@@ -120,6 +126,7 @@ export default function BlogEditor() {
           summary: post.summary,
           date: post.date,
           featured: post.featured,
+          tags: post.tags,
         }),
       });
 
@@ -180,6 +187,21 @@ export default function BlogEditor() {
           />
         </div>
 
+        {/* 标签输入 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            文章标签
+          </label>
+          <input
+            type="text"
+            value={post.tags}
+            onChange={handleTagsChange}
+            placeholder="请输入标签，多个标签用逗号分隔（可选）"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-sm text-gray-500 mt-1">例如：产品经理, 技术分享, 个人成长</p>
+        </div>
+
         {/* 内容编辑 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -202,7 +224,7 @@ export default function BlogEditor() {
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           />
           <label htmlFor="featured" className="ml-2 block text-sm text-gray-700">
-            设为特色文章（在首页推荐阅读中显示）
+            设为置顶文章（在首页推荐阅读中显示）
           </label>
         </div>
 

@@ -24,6 +24,7 @@ export default function ValineGuestbook() {
             appId: 'tNNnez7lGPAvJR1m7SJmdgWr-gzGzoHsz',
             appKey: 'qQyqSoZuGOaEIj7Urq6U0A0B',
             placeholder: '请输入留言...',
+            placeholderMail: '联系方式（选填）',
             avatar: 'mm',
             meta: ['nick', 'mail'],
             pageSize: 10,
@@ -62,6 +63,26 @@ export default function ValineGuestbook() {
   return (
     <div className="mt-8">
       <h3 className="text-lg font-semibold mb-4">留言板</h3>
+      <style jsx>{`
+        #vguestbook .vc-count {
+          display: none;
+        }
+        #vguestbook .vc-count::after {
+          content: "留言";
+        }
+        /* 确保所有评论数量显示为"留言" */
+        #vguestbook .vc-count,
+        #vguestbook [class*="count"],
+        #vguestbook [class*="comment"] {
+          display: none !important;
+        }
+        #vguestbook .vc-count::after,
+        #vguestbook [class*="count"]::after,
+        #vguestbook [class*="comment"]::after {
+          content: "留言" !important;
+          display: inline !important;
+        }
+      `}</style>
       <div id="vguestbook"></div>
     </div>
   );

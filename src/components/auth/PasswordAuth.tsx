@@ -20,6 +20,7 @@ export default function PasswordAuth({ onSuccess }: PasswordAuthProps) {
     setError("");
 
     try {
+      // 简单的密码验证（生产环境建议使用更安全的加密方式）
       if (password === config.auth.password) {
         // 保存认证状态到 localStorage
         localStorage.setItem("blog-auth", "true");
