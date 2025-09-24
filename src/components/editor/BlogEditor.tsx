@@ -114,6 +114,11 @@ export default function BlogEditor() {
 
     setIsSaving(true);
     setSaveStatus("🚀 正在发布文章...");
+
+    // 计算基础路径（在 GitHub Pages 下应为 /zhaowyblog）
+    const basePath = (typeof window !== 'undefined' && window.location.pathname.startsWith('/zhaowyblog'))
+      ? '/zhaowyblog'
+      : '';
     
     try {
       // 生成Markdown内容
@@ -175,9 +180,9 @@ ${post.content}`;
         const filteredDrafts = drafts.filter((draft: BlogPost) => draft.id !== post.id);
         localStorage.setItem("blog-drafts", JSON.stringify(filteredDrafts));
         
-        // 3秒后跳转到首页
+        // 3秒后跳转到首页（考虑 GitHub Pages 二级路径 /zhaowyblog）
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = `${basePath}/`;
         }, 3000);
       } else {
         const errorData = await response.json();
