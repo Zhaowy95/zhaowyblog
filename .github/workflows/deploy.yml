@@ -18,6 +18,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      NODE_OPTIONS: --max_old_space_size=4096
     
     steps:
     - name: Checkout
@@ -34,6 +37,16 @@ jobs:
       
     - name: Build
       run: npm run build
+
+    - name: Generate sitemap and RSS
+      run: |
+        npm run generate-sitemap
+        npm run generate-rss
+
+    - name: Verify build output
+      run: |
+        test -d out && echo "out directory exists" || (echo "out directory missing" && exit 1)
+        ls -la out | head -100 | cat
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
