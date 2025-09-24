@@ -114,47 +114,43 @@ export default function BlogEditor() {
 
     setIsSaving(true);
     try {
-      // 直接发布到GitHub
-      const response = await fetch('/api/save-blog-github', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: post.title,
-          content: post.content,
-          summary: post.summary,
-          date: post.date,
-          featured: post.featured,
-          tags: post.tags,
-        }),
-      });
+      // 生成Markdown内容
+      const timestamp = Date.now();
+      const fileName = `blog-${timestamp}.md`;
+      const tagsArray = post.tags ? post.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag) : [];
+      
+      const markdownContent = `---
+title: "${post.title}"
+date: "${post.date}"
+summary: "${post.summary || ''}"
+featured: ${post.featured || false}
+tags: [${tagsArray.map((tag: string) => `"${tag}"`).join(', ')}]
+---
 
-      if (response.ok) {
-        setSaveStatus("🎉 文章发布成功！已自动保存到GitHub仓库，Netlify正在重新部署...");
-        
-        // 清除草稿
-        const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
-        const filteredDrafts = drafts.filter((draft: BlogPost) => draft.id !== post.id);
-        localStorage.setItem("blog-drafts", JSON.stringify(filteredDrafts));
-        
-        // 3秒后跳转到首页
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 3000);
-      } else {
-        let errorMessage = '未知错误';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorData.details || '未知错误';
-        } catch (jsonError) {
-          // 如果响应不是JSON，尝试获取文本内容
-          const textResponse = await response.text();
-          console.error('非JSON响应:', textResponse);
-          errorMessage = `服务器错误 (${response.status}): ${textResponse.substring(0, 100)}...`;
-        }
-        setSaveStatus(`❌ 发布失败：${errorMessage}`);
-      }
+${post.content}`;
+
+      // 创建下载链接
+      const blob = new Blob([markdownContent], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setSaveStatus("🎉 文章已生成并下载！请按以下步骤完成发布：1. 将下载的文件上传到GitHub仓库的 src/content/blog/ 目录 2. 提交并推送更改 3. 等待自动部署完成");
+      
+      // 清除草稿
+      const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
+      const filteredDrafts = drafts.filter((draft: BlogPost) => draft.id !== post.id);
+      localStorage.setItem("blog-drafts", JSON.stringify(filteredDrafts));
+      
+      // 5秒后跳转到首页
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 5000);
       
     } catch (error) {
       console.error('发布文章失败:', error);
