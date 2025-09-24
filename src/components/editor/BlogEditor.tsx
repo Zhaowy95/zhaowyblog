@@ -157,7 +157,9 @@ ${post.content}`;
       });
 
       if (response.ok) {
-        const result = await response.json();
+        // Read and discard the response body to avoid unhandled promise without
+        // introducing an unused variable that breaks the ESLint build step.
+        await response.json();
         setSaveStatus("🎉 文章发布成功！正在自动部署中，请稍候...");
         
         // 清除草稿
