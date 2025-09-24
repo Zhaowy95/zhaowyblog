@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import AdvancedTiptapEditor from "./AdvancedTiptapEditor";
 
 interface BlogPost {
@@ -26,7 +25,7 @@ export default function BlogEditor() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
-  const router = useRouter();
+  const [markdownContent, setMarkdownContent] = useState("");
 
   useEffect(() => {
     // 检查是否有正在编辑的草稿
@@ -110,62 +109,41 @@ export default function BlogEditor() {
 
     setIsSaving(true);
     try {
-      // 首先尝试本地文件系统保存
-      let response = await fetch('/api/save-blog', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: post.title,
-          content: post.content,
-          summary: post.summary,
-          date: post.date,
-          featured: post.featured,
-        }),
-      });
+      // 生成Markdown内容
+      const timestamp = Date.now();
+      const fileName = `blog-${timestamp}.md`;
+      const markdown = `---
+title: "${post.title}"
+date: "${post.date}"
+summary: "${post.summary || ''}"
+featured: ${post.featured || false}
+---
 
-      // 如果本地保存失败，尝试GitHub API保存
-      if (!response.ok) {
-        console.log('本地保存失败，尝试GitHub API保存');
-        response = await fetch('/api/save-blog-github', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            title: post.title,
-            content: post.content,
-            summary: post.summary,
-            date: post.date,
-            featured: post.featured,
-          }),
-        });
-      }
+${post.content}`;
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('API错误响应:', errorData);
-        throw new Error(errorData.error || errorData.details || '保存失败');
-      }
-
-      const result = await response.json();
-      console.log('API成功响应:', result);
-      setSaveStatus("文章发布成功！已保存到文件系统。");
+      setMarkdownContent(markdown);
+      setSaveStatus(`文章已准备就绪！请按照以下步骤手动同步到GitHub：\n\n1. 复制下面的Markdown内容\n2. 在GitHub仓库中创建新文件\n3. 文件路径：src/content/blog/${fileName}\n4. 粘贴内容并提交\n5. Netlify将自动重新部署\n\n文件名：${fileName}`);
       
       // 清除草稿
       const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
       const filteredDrafts = drafts.filter((draft: BlogPost) => draft.id !== post.id);
       localStorage.setItem("blog-drafts", JSON.stringify(filteredDrafts));
       
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
     } catch (error) {
       console.error('发布文章失败:', error);
       setSaveStatus(`发布失败: ${error instanceof Error ? error.message : '请重试'}`);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const copyMarkdown = async () => {
+    try {
+      await navigator.clipboard.writeText(markdownContent);
+      setSaveStatus("Markdown内容已复制到剪贴板！");
+    } catch (error) {
+      console.error('复制失败:', error);
+      setSaveStatus("复制失败，请手动复制内容");
     }
   };
 
@@ -229,9 +207,22 @@ export default function BlogEditor() {
         {/* 状态提示 */}
         {saveStatus && (
           <div className={`p-3 rounded-md ${
-            saveStatus.includes("成功") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+            saveStatus.includes("成功") || saveStatus.includes("准备就绪") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
           }`}>
-            {saveStatus}
+            <div className="whitespace-pre-line">{saveStatus}</div>
+            {markdownContent && (
+              <div className="mt-4">
+                <button
+                  onClick={copyMarkdown}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                >
+                  复制Markdown内容
+                </button>
+                <div className="mt-2 p-3 bg-gray-100 rounded text-sm font-mono overflow-auto max-h-40">
+                  <pre>{markdownContent}</pre>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
