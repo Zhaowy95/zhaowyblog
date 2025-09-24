@@ -4,9 +4,9 @@ export const config = {
     name: "Zhao某人",
     description: "专注于产品经理转独立开发之路",
     keywords: ["产品经理", "独立开发", "前端开发", "技术博客"],
-    url: "https://zhaowy.netlify.app/",
-    baseUrl: "https://zhaowy.netlify.app/",
-    image: "https://zhaowy.netlify.app/avatar.jpg",
+    url: "https://zhaowy95.github.io/zhaowyblog/",
+    baseUrl: "https://zhaowy95.github.io/zhaowyblog/",
+    image: "https://zhaowy95.github.io/zhaowyblog/avatar.jpg",
     favicon: {
       ico: "/boyicon.png",
       png: "/boyicon.png",
@@ -56,7 +56,7 @@ export const config = {
     password: "123456",
   },
   seo: {
-    metadataBase: new URL("https://zhaowy.netlify.app/"),
+    metadataBase: new URL("https://zhaowy95.github.io/zhaowyblog/"),
     alternates: {
       canonical: './',
     },
