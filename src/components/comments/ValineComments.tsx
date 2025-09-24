@@ -38,11 +38,8 @@ export default function ValineComments({ articleId, title }: ValineCommentsProps
             recordIP: true,
             path: articleId, // 使用文章ID作为路径
             title: title || '文章评论',
-            serverURLs: {
-              api: 'https://tNNnez7l.api.lncldglobal.com',
-              img: 'https://tNNnez7l.img.lncldglobal.com',
-              realtime: 'https://tNNnez7l.rtm.lncldglobal.com'
-            }
+            // 切换为中国区节点（与你的应用一致）。如需省略也可删除 serverURLs，由 SDK 自动匹配。
+            serverURLs: 'https://tnnnez71.lc-cn-n1-shared.com'
           });
         } catch (error) {
           console.error('Valine初始化失败:', error);
