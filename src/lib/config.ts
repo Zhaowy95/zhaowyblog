@@ -1,22 +1,22 @@
 export const config = {
   site: {
-    title: "Nextjs Blog Template",
-    name: "Nextjs Blog Template",
-    description: "Nextjs Blog Template",
-    keywords: ["Nextjs Blog Template", "AI", "Full Stack Developer"],
-    url: "https://xxx.com",
-    baseUrl: "https://xxx.com",
-    image: "https://xxx.com/og-image.png",
+    title: "Can某人",
+    name: "Can某人",
+    description: "专注于产品经理转独立开发之路",
+    keywords: ["产品经理", "独立开发", "前端开发", "技术博客"],
+    url: "https://zhaowy.netlify.app/",
+    baseUrl: "https://zhaowy.netlify.app/",
+    image: "https://zhaowy.netlify.app/avatar.jpg",
     favicon: {
-      ico: "/favicon.ico",
-      png: "/favicon.png",
-      svg: "/favicon.svg",
-      appleTouchIcon: "/favicon.png",
+      ico: "/boyicon.png",
+      png: "/boyicon.png",
+      svg: "/boyicon.png",
+      appleTouchIcon: "/boyicon.png",
     },
     manifest: "/site.webmanifest",
     rss: {
-      title: "Nextjs Blog Template",
-      description: "Thoughts on Full-stack development, AI",
+      title: "Can某人",
+      description: "专注于产品经理转独立开发之路",
       feedLinks: {
         rss2: "/rss.xml",
         json: "/feed.json",
@@ -25,16 +25,15 @@ export const config = {
     },
   },
   author: {
-    name: "Your Name",
-    email: "your.email@example.com",
-    bio: "这是一个 Nextjs 博客模板",
+    name: "zhaowy",
+    email: "zhaowy95@163.com",
+    bio: "专注于产品经理转独立开发之路",
+    avatar: "/avatar.jpg",
   },
   social: {
-    github: "https://github.com/xxx",
-    x: "https://x.com/xxx",
-    xiaohongshu: "https://www.xiaohongshu.com/user/profile/xxx",
-    wechat: "https://storage.xxx.com/images/wechat-official-account.png",
-    buyMeACoffee: "https://www.buymeacoffee.com/xxx",
+    github: "https://github.com/Zhaowy95",
+    xiaohongshu: "https://www.xiaohongshu.com/user/profile/5c7f632d000000001600761a",
+    wechat: "/images/wechat-qr.png",
   },
   giscus: {
     repo: "guangzhengli/hugo-ladder-exampleSite",
@@ -47,10 +46,17 @@ export const config = {
         title: "文章", 
         href: "/blog",
       },
+      { 
+        title: "留言板", 
+        href: "/guestbook",
+      },
     ],
   },
+  auth: {
+    password: "123456",
+  },
   seo: {
-    metadataBase: new URL("https://xxx.com"),
+    metadataBase: new URL("https://zhaowy.netlify.app/"),
     alternates: {
       canonical: './',
     },
@@ -60,7 +66,7 @@ export const config = {
     },
     twitter: {
       card: "summary_large_image" as const,
-      creator: "@xxx",
+      creator: "@zhaowy",
     },
   },
 };

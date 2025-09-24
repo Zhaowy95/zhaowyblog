@@ -13,8 +13,8 @@ import rehypeKatex from 'rehype-katex'
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import 'highlight.js/styles/github-dark.min.css'
-import GiscusComments from "@/components/giscus-comments"
 import { GoToTop } from "@/components/go-to-top"
+import ArticleComments from "@/components/comments/ArticleComments"
 import 'katex/dist/katex.min.css';
 import { config } from "@/lib/config";
 
@@ -116,7 +116,8 @@ export default async function BlogPage(props: BlogsPageProps) {
           <MDXRemote source={blog.content} components={components} options={options} />
         </div>
 
-        <GiscusComments />
+        {/* 文章评论 */}
+        <ArticleComments articleId={blog.slug} />
       </div>
       <div className="hidden text-sm xl:block">
         <div className="sticky top-16 -mt-6 h-[calc(100vh-3.5rem)]">

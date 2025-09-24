@@ -1,32 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { NavDesktopMenu } from "./nav-desktop-menu";
 import { NavMobileMenu } from "./nav-mobile-menu";
-import GithubIcon from "@/components/icons/github";
-import XiaohongshuIcon from "@/components/icons/xiaohongshu";
-import XIcon from "@/components/icons/x";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { SquareTerminal } from "lucide-react";
 import { config } from "@/lib/config";
+import PasswordModal from "@/components/auth/PasswordModal";
 
 export function Header() {
   const pathname = usePathname();
-  const isBlogPage = pathname.includes("/blog/");
+  const isBlogPage = pathname.includes("/blog/") || pathname.includes("/write");
+  const router = useRouter();
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
-  const socialLinks = [
-    { title: "Github", key: "github", icon: <GithubIcon /> },
-    { title: "X", key: "x", icon: <XIcon /> },
-    { title: "Xiaohongshu", key: "xiaohongshu", icon: <XiaohongshuIcon /> },
-  ]
-    .map(item => ({
-      title: item.title,
-      href: config.social && config.social[item.key as keyof typeof config.social],
-      icon: item.icon
-    }))
-    .filter(link => !!link.href);
+  const handleWriteBlogClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowPasswordModal(true);
+  };
+
+  const handleAuthSuccess = () => {
+    router.push("/write");
+  };
+
 
   return (
     <header className="pt-4">
@@ -41,7 +41,15 @@ export function Header() {
 
         {/* Logo */}
         <Link href="/" title="Home" className="flex items-center gap-4 md:order-first">
-          <SquareTerminal className="w-10 h-10" />
+          {config.author.avatar && (
+            <img 
+              src={config.author.avatar} 
+              alt="Home" 
+              className="w-10 h-10 rounded-full object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          )}
         </Link>
 
         {/* Desktop navigation */}
@@ -49,14 +57,30 @@ export function Header() {
           <NavDesktopMenu />
         </div>
 
-        {/* Right side buttons */}
-        <div className="flex items-center space-x-2 md:space-x-8 mr-4">
-          {socialLinks.map((link) => (
-            <Link key={link.title} href={link.href} title={link.title}>
-              {link.icon}
-            </Link>
-          ))}
+        {/* Write Blog Button */}
+        <div className="flex items-center relative">
+          <button 
+            onClick={handleWriteBlogClick}
+            className="flex items-center"
+            title="写博客"
+          >
+            <img 
+              src="/writeblog.png" 
+              alt="写博客" 
+              className="w-8 h-8 hover:opacity-80 transition-opacity"
+              loading="eager"
+              decoding="async"
+            />
+          </button>
+          
+          {/* Password Modal */}
+          <PasswordModal 
+            isOpen={showPasswordModal}
+            onClose={() => setShowPasswordModal(false)}
+            onSuccess={handleAuthSuccess}
+          />
         </div>
+
       </motion.div>
     </header >
   );

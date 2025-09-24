@@ -1,15 +1,8 @@
-import { type Metadata } from "next";
 import { allBlogs } from "content-collections";
 import Link from "next/link";
 import count from 'word-count'
 import { config } from "@/lib/config";
 import { formatDate } from "@/lib/utils";
-
-export const metadata: Metadata = {
-  title: `Blogs | ${config.site.title}`,
-  description: `Blogs of ${config.site.title}`,
-  keywords: `${config.site.title}, blogs, ${config.site.title} blogs, nextjs blog template`,
-};
 
 export default function BlogPage() {
   const blogs = allBlogs.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -43,5 +36,3 @@ export default function BlogPage() {
     </div>
   );
 }
-
-
