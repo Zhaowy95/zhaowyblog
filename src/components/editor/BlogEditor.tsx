@@ -113,6 +113,8 @@ export default function BlogEditor() {
     }
 
     setIsSaving(true);
+    setSaveStatus("🚀 正在发布文章...");
+    
     try {
       // 生成Markdown内容
       const timestamp = Date.now();
@@ -129,32 +131,52 @@ tags: [${tagsArray.map((tag: string) => `"${tag}"`).join(', ')}]
 
 ${post.content}`;
 
-      // 创建下载链接
-      const blob = new Blob([markdownContent], { type: 'text/markdown' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // 使用 GitHub API 直接提交文件
+      const githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+      
+      if (!githubToken) {
+        setSaveStatus("❌ 请配置 GitHub Token 以实现自动发布功能");
+        return;
+      }
 
-      setSaveStatus("🎉 文章已生成并下载！请按以下步骤完成发布：1. 将下载的文件上传到GitHub仓库的 src/content/blog/ 目录 2. 提交并推送更改 3. 等待自动部署完成");
+      // 将内容编码为 base64
+      const encodedContent = btoa(unescape(encodeURIComponent(markdownContent)));
       
-      // 清除草稿
-      const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
-      const filteredDrafts = drafts.filter((draft: BlogPost) => draft.id !== post.id);
-      localStorage.setItem("blog-drafts", JSON.stringify(filteredDrafts));
-      
-      // 5秒后跳转到首页
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 5000);
+      // 调用 GitHub API
+      const response = await fetch(`https://api.github.com/repos/Zhaowy95/zhaowyblog/contents/src/content/blog/${fileName}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${githubToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: `发布新文章: ${post.title}`,
+          content: encodedContent,
+          branch: 'main'
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSaveStatus("🎉 文章发布成功！正在自动部署中，请稍候...");
+        
+        // 清除草稿
+        const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
+        const filteredDrafts = drafts.filter((draft: BlogPost) => draft.id !== post.id);
+        localStorage.setItem("blog-drafts", JSON.stringify(filteredDrafts));
+        
+        // 3秒后跳转到首页
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
+      } else {
+        const errorData = await response.json();
+        setSaveStatus(`❌ 发布失败：${errorData.message || '未知错误'}`);
+      }
       
     } catch (error) {
       console.error('发布文章失败:', error);
-      setSaveStatus(`发布失败: ${error instanceof Error ? error.message : '请重试'}`);
+      setSaveStatus(`❌ 发布失败: ${error instanceof Error ? error.message : '请重试'}`);
     } finally {
       setIsSaving(false);
     }
