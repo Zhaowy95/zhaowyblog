@@ -1,7 +1,7 @@
 export const config = {
   site: {
-    title: "Can某人",
-    name: "Can某人",
+    title: "Zhao某人",
+    name: "Zhao某人",
     description: "专注于产品经理转独立开发之路",
     keywords: ["产品经理", "独立开发", "前端开发", "技术博客"],
     url: "https://zhaowy.netlify.app/",
@@ -15,7 +15,7 @@ export const config = {
     },
     manifest: "/site.webmanifest",
     rss: {
-      title: "Can某人",
+      title: "Zhao某人",
       description: "专注于产品经理转独立开发之路",
       feedLinks: {
         rss2: "/rss.xml",

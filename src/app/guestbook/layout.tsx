@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "留言板 | Can某人",
+  title: "留言板 | Zhao某人",
   description: "欢迎在这里留下您的想法、建议或任何想说的话",
   icons: [
     { rel: "icon", url: "/boyicon.png", sizes: "16x16", type: "image/png" },
