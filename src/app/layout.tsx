@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { config } from "@/lib/config";
+import WechatCompatibility from "@/components/WechatCompatibility";
 
 export const metadata: Metadata = {
   title: config.site.title,
@@ -99,8 +100,27 @@ export default function RootLayout({
         <meta name="application-name" content="Zhao某人" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="theme-color" content="#ffffff" />
+        
+        {/* 微信浏览器兼容性设置 */}
+        <meta name="referrer" content="no-referrer" />
+        <meta name="referrer" content="never" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="renderer" content="webkit" />
+        <meta name="force-rendering" content="webkit" />
+        <meta name="x5-orientation" content="portrait" />
+        <meta name="x5-fullscreen" content="true" />
+        <meta name="x5-page-mode" content="app" />
+        <meta name="screen-orientation" content="portrait" />
+        <meta name="full-screen" content="yes" />
+        <meta name="browsermode" content="application" />
+        <meta name="x5-cache" content="false" />
+        <meta name="x5-cache-mode" content="no-cache" />
+        <meta name="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta name="Pragma" content="no-cache" />
+        <meta name="Expires" content="0" />
       </head>
       <body className="min-w-md overflow-x-hidden">
+        <WechatCompatibility />
         <Header />
         {children}
       </body>

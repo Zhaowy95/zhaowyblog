@@ -19,6 +19,40 @@ const nextConfig: NextConfig = {
   // swcMinify: true, // Next.js 15已默认启用
   // 静态资源优化
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  // 微信浏览器兼容性配置
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'no-referrer',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 const withMDX = createMDX({

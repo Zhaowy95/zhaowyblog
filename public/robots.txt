@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# 微信浏览器兼容性
+User-agent: MicroMessenger
+Allow: /
+
+# 禁止缓存
+Cache-Control: no-cache, no-store, must-revalidate
+Pragma: no-cache
+Expires: 0
+
+Sitemap: https://zhaowy.netlify.app/sitemap.xml
