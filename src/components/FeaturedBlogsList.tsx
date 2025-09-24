@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { allBlogs } from "content-collections";
 import Link from "next/link";
 import count from 'word-count';
 import { formatDate } from "@/lib/utils";
@@ -44,6 +43,7 @@ export default function FeaturedBlogsList({ initialFeaturedBlogs, selectedTag }:
                     alt="推荐" 
                     className="w-6 h-4 flex-shrink-0"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <span className="text-sm text-gray-500 flex-shrink-0 ml-2">
