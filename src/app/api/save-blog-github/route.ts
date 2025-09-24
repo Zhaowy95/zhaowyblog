@@ -33,29 +33,14 @@ ${content}`;
 
     console.log('Markdown内容生成完成');
 
-    // 尝试使用GitHub API保存文件
+    // 使用GitHub API直接保存文件
     const githubToken = process.env.GITHUB_TOKEN;
     
     if (!githubToken) {
-      console.log('GitHub token未配置，返回手动同步方案');
+      console.log('GitHub token未配置');
       return NextResponse.json(
-        { 
-          error: 'GitHub token未配置',
-          fallback: true,
-          fileName: fileName,
-          content: markdownContent,
-          instructions: {
-            title: '手动同步步骤',
-            steps: [
-              '1. 复制下面的Markdown内容',
-              '2. 在GitHub仓库中创建新文件',
-              '3. 文件路径：src/content/blog/' + fileName,
-              '4. 粘贴内容并提交',
-              '5. Netlify将自动重新部署'
-            ]
-          }
-        },
-        { status: 200 } // 返回200，但包含fallback信息
+        { error: 'GitHub token未配置，请在Netlify中配置GITHUB_TOKEN环境变量' },
+        { status: 500 }
       );
     }
 

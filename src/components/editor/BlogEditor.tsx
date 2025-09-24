@@ -25,7 +25,6 @@ export default function BlogEditor() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
-  const [markdownContent, setMarkdownContent] = useState("");
 
   useEffect(() => {
     // 检查是否有正在编辑的草稿
@@ -109,19 +108,7 @@ export default function BlogEditor() {
 
     setIsSaving(true);
     try {
-      // 生成Markdown内容
-      const timestamp = Date.now();
-      const fileName = `blog-${timestamp}.md`;
-      const markdown = `---
-title: "${post.title}"
-date: "${post.date}"
-summary: "${post.summary || ''}"
-featured: ${post.featured || false}
----
-
-${post.content}`;
-
-      // 尝试自动发布到GitHub
+      // 直接发布到GitHub
       const response = await fetch('/api/save-blog-github', {
         method: 'POST',
         headers: {
@@ -136,10 +123,7 @@ ${post.content}`;
         }),
       });
 
-      const result = await response.json();
-      
-      if (response.ok && result.success) {
-        // 自动发布成功
+      if (response.ok) {
         setSaveStatus("🎉 文章发布成功！已自动保存到GitHub仓库，Netlify正在重新部署...");
         
         // 清除草稿
@@ -151,15 +135,9 @@ ${post.content}`;
         setTimeout(() => {
           window.location.href = "/";
         }, 3000);
-      } else if (result.fallback) {
-        // 需要手动同步
-        setMarkdownContent(result.content);
-        setSaveStatus(`⚠️ 需要手动同步到GitHub：\n\n${result.instructions.steps.join('\n')}\n\n文件名：${result.fileName}`);
       } else {
-        // 其他错误
-        console.log('发布失败:', result);
-        setMarkdownContent(markdown);
-        setSaveStatus(`❌ 发布失败：${result.error || result.details || '未知错误'}\n\n请使用手动同步方案：\n\n1. 复制下面的Markdown内容\n2. 在GitHub仓库中创建新文件\n3. 文件路径：src/content/blog/${fileName}\n4. 粘贴内容并提交\n5. Netlify将自动重新部署\n\n文件名：${fileName}`);
+        const errorData = await response.json();
+        setSaveStatus(`❌ 发布失败：${errorData.error || '未知错误'}`);
       }
       
     } catch (error) {
@@ -170,15 +148,6 @@ ${post.content}`;
     }
   };
 
-  const copyMarkdown = async () => {
-    try {
-      await navigator.clipboard.writeText(markdownContent);
-      setSaveStatus("Markdown内容已复制到剪贴板！");
-    } catch (error) {
-      console.error('复制失败:', error);
-      setSaveStatus("复制失败，请手动复制内容");
-    }
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
@@ -240,22 +209,9 @@ ${post.content}`;
         {/* 状态提示 */}
         {saveStatus && (
           <div className={`p-3 rounded-md ${
-            saveStatus.includes("成功") || saveStatus.includes("准备就绪") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+            saveStatus.includes("成功") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
           }`}>
             <div className="whitespace-pre-line">{saveStatus}</div>
-            {markdownContent && (
-              <div className="mt-4">
-                <button
-                  onClick={copyMarkdown}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                >
-                  复制Markdown内容
-                </button>
-                <div className="mt-2 p-3 bg-gray-100 rounded text-sm font-mono overflow-auto max-h-40">
-                  <pre>{markdownContent}</pre>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
