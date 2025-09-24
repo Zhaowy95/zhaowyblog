@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent } from '@tiptap/react';
-import { useCallback, useMemo } from 'react';
+// import { useCallback, useMemo } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
@@ -376,7 +376,7 @@ export default function AdvancedTiptapEditor({ content, onChange, placeholder }:
             isActive={editor.isActive('blockquote')}
             title="引用"
           >
-            " 引用
+            &ldquo; 引用
           </ToolbarButton>
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleCode().run()}
@@ -390,7 +390,7 @@ export default function AdvancedTiptapEditor({ content, onChange, placeholder }:
             isActive={editor.isActive('codeBlock')}
             title="代码块"
           >
-            { }
+            {'{ }'}
           </ToolbarButton>
         </div>
 

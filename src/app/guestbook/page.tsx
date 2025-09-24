@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { GuestbookEntry, GuestbookFormData } from "./types/guestbook";
 import dynamic from "next/dynamic";
 import Tabs from "@/components/ui/tabs";

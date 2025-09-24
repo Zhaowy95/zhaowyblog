@@ -20,20 +20,20 @@ export default function ArticleComments({ articleId }: ArticleCommentsProps) {
   const [showComments, setShowComments] = useState(false);
 
   useEffect(() => {
+    const loadComments = () => {
+      try {
+        const savedComments = localStorage.getItem(`article-comments-${articleId}`);
+        if (savedComments) {
+          const parsedComments = JSON.parse(savedComments);
+          setComments(parsedComments.sort((a: Comment, b: Comment) => b.timestamp - a.timestamp));
+        }
+      } catch (error) {
+        console.error("加载评论失败:", error);
+      }
+    };
+
     loadComments();
   }, [articleId]);
-
-  const loadComments = () => {
-    try {
-      const savedComments = localStorage.getItem(`article-comments-${articleId}`);
-      if (savedComments) {
-        const parsedComments = JSON.parse(savedComments);
-        setComments(parsedComments.sort((a: Comment, b: Comment) => b.timestamp - a.timestamp));
-      }
-    } catch (error) {
-      console.error("加载评论失败:", error);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

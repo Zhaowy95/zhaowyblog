@@ -15,7 +15,7 @@ interface TiptapEditorProps {
   placeholder?: string;
 }
 
-export default function TiptapEditor({ content, onChange, placeholder }: TiptapEditorProps) {
+export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   const [isPreview, setIsPreview] = useState(false);
 
   const editor = useEditor({
@@ -209,7 +209,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: TiptapE
             isActive={editor.isActive('codeBlock')}
             title="代码块"
           >
-            { }
+            {'{ }'}
           </ToolbarButton>
         </div>
 

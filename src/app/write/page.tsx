@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import PasswordAuth from "@/components/auth/PasswordAuth";
@@ -19,7 +18,6 @@ const BlogEditor = dynamic(() => import("@/components/editor/BlogEditor"), {
 export default function WritePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     // 检查认证状态

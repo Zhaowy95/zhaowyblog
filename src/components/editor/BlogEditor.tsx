@@ -95,7 +95,7 @@ export default function BlogEditor() {
       localStorage.setItem("blog-drafts", JSON.stringify(drafts));
       setSaveStatus("草稿保存成功！");
       setTimeout(() => setSaveStatus(""), 3000);
-    } catch (error) {
+    } catch {
       setSaveStatus("保存失败，请重试");
     } finally {
       setIsSaving(false);
@@ -130,7 +130,7 @@ export default function BlogEditor() {
         throw new Error(errorData.error || '保存失败');
       }
 
-      const result = await response.json();
+      await response.json();
       setSaveStatus("文章发布成功！已保存到本地文件系统。");
       
       // 清除草稿

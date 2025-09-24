@@ -1,7 +1,6 @@
 import { allBlogs } from "content-collections";
 import Link from "next/link";
 import count from 'word-count'
-import { config } from "@/lib/config";
 import { formatDate } from "@/lib/utils";
 
 export default function BlogPage() {

@@ -146,7 +146,7 @@ export default function SimpleTiptapEditor({ content, onChange, placeholder }: S
             isActive={editor.isActive('codeBlock')}
             title="代码块"
           >
-            { }
+            {'{ }'}
           </ToolbarButton>
         </div>
 

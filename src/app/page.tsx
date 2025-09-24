@@ -34,7 +34,7 @@ export default function Home() {
         {/* 社交链接 - 仅当有链接时才显示 */}
         {socialLinks.length > 0 && (
           <div className="flex space-x-4 items-center">
-            {socialLinks.map((link, index) => (
+            {socialLinks.map((link) => (
               <div key={link.name} className="flex items-center">
                 {link.name === "公众号" ? (
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">

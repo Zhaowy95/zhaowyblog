@@ -30,7 +30,7 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
       } else {
         setError("密码错误，请重新输入");
       }
-    } catch (error) {
+    } catch {
       setError("验证失败，请重试");
     } finally {
       setIsLoading(false);
