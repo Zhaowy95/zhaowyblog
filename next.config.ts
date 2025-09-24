@@ -24,8 +24,6 @@ const nextConfig: NextConfig = {
   compress: true,
   // 生产环境优化
   // swcMinify: true, // Next.js 15已默认启用
-  // 静态资源优化
-  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
   // 微信浏览器兼容性配置
   async headers() {
     return [
