@@ -39,11 +39,25 @@ ${content}`;
     const githubToken = process.env.GITHUB_TOKEN;
     
     if (!githubToken) {
-      console.log('GitHub token未配置');
-      return NextResponse.json(
-        { error: 'GitHub token未配置，请在Netlify中配置GITHUB_TOKEN环境变量' },
-        { status: 500 }
-      );
+      console.log('GitHub token未配置，使用本地保存');
+      // 如果没有GitHub token，使用本地保存
+      const { writeFile, mkdir } = await import('fs/promises');
+      const { join } = await import('path');
+      
+      // 确保目录存在
+      const blogDir = join(process.cwd(), 'src', 'content', 'blog');
+      await mkdir(blogDir, { recursive: true });
+      
+      // 写入文件
+      const filePath = join(blogDir, fileName);
+      await writeFile(filePath, markdownContent, 'utf-8');
+      
+      return NextResponse.json({
+        success: true,
+        message: '文章保存成功（本地保存）',
+        fileName: fileName,
+        filePath: filePath
+      });
     }
 
     const githubApiUrl = 'https://api.github.com/repos/Zhaowy95/zhaowyblog/contents/src/content/blog/' + fileName;

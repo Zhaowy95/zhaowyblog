@@ -143,8 +143,17 @@ export default function BlogEditor() {
           window.location.href = "/";
         }, 3000);
       } else {
-        const errorData = await response.json();
-        setSaveStatus(`❌ 发布失败：${errorData.error || '未知错误'}`);
+        let errorMessage = '未知错误';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.details || '未知错误';
+        } catch (jsonError) {
+          // 如果响应不是JSON，尝试获取文本内容
+          const textResponse = await response.text();
+          console.error('非JSON响应:', textResponse);
+          errorMessage = `服务器错误 (${response.status}): ${textResponse.substring(0, 100)}...`;
+        }
+        setSaveStatus(`❌ 发布失败：${errorMessage}`);
       }
       
     } catch (error) {

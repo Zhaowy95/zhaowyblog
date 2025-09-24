@@ -33,7 +33,12 @@ export default function ValineGuestbook() {
             enableQQ: true,
             recordIP: true,
             path: 'guestbook', // 留言板固定路径
-            title: '留言板'
+            title: '留言板',
+            serverURLs: {
+              api: 'https://tNNnez7l.api.lncldglobal.com',
+              img: 'https://tNNnez7l.img.lncldglobal.com',
+              realtime: 'https://tNNnez7l.rtm.lncldglobal.com'
+            }
           });
         } catch (error) {
           console.error('Valine留言板初始化失败:', error);

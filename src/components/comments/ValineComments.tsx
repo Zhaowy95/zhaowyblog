@@ -37,7 +37,12 @@ export default function ValineComments({ articleId, title }: ValineCommentsProps
             enableQQ: true,
             recordIP: true,
             path: articleId, // 使用文章ID作为路径
-            title: title || '文章评论'
+            title: title || '文章评论',
+            serverURLs: {
+              api: 'https://tNNnez7l.api.lncldglobal.com',
+              img: 'https://tNNnez7l.img.lncldglobal.com',
+              realtime: 'https://tNNnez7l.rtm.lncldglobal.com'
+            }
           });
         } catch (error) {
           console.error('Valine初始化失败:', error);

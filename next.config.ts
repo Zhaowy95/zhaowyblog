@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   output: 'export',
   trailingSlash: true,
-  basePath: '/zhaowyblog',
+  basePath: process.env.NODE_ENV === 'production' ? '/zhaowyblog' : '',
   assetPrefix: process.env.NODE_ENV === 'production' ? '/zhaowyblog/' : '',
   images: {
     unoptimized: true,
