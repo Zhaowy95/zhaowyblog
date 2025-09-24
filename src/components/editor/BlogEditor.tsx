@@ -121,13 +121,46 @@ featured: ${post.featured || false}
 
 ${post.content}`;
 
-      setMarkdownContent(markdown);
-      setSaveStatus(`文章已准备就绪！请按照以下步骤手动同步到GitHub：\n\n1. 复制下面的Markdown内容\n2. 在GitHub仓库中创建新文件\n3. 文件路径：src/content/blog/${fileName}\n4. 粘贴内容并提交\n5. Netlify将自动重新部署\n\n文件名：${fileName}`);
+      // 尝试自动发布到GitHub
+      const response = await fetch('/api/save-blog-github', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: post.title,
+          content: post.content,
+          summary: post.summary,
+          date: post.date,
+          featured: post.featured,
+        }),
+      });
+
+      const result = await response.json();
       
-      // 清除草稿
-      const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
-      const filteredDrafts = drafts.filter((draft: BlogPost) => draft.id !== post.id);
-      localStorage.setItem("blog-drafts", JSON.stringify(filteredDrafts));
+      if (response.ok && result.success) {
+        // 自动发布成功
+        setSaveStatus("🎉 文章发布成功！已自动保存到GitHub仓库，Netlify正在重新部署...");
+        
+        // 清除草稿
+        const drafts = JSON.parse(localStorage.getItem("blog-drafts") || "[]");
+        const filteredDrafts = drafts.filter((draft: BlogPost) => draft.id !== post.id);
+        localStorage.setItem("blog-drafts", JSON.stringify(filteredDrafts));
+        
+        // 3秒后跳转到首页
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000);
+      } else if (result.fallback) {
+        // 需要手动同步
+        setMarkdownContent(result.content);
+        setSaveStatus(`⚠️ 需要手动同步到GitHub：\n\n${result.instructions.steps.join('\n')}\n\n文件名：${result.fileName}`);
+      } else {
+        // 其他错误
+        console.log('发布失败:', result);
+        setMarkdownContent(markdown);
+        setSaveStatus(`❌ 发布失败：${result.error || result.details || '未知错误'}\n\n请使用手动同步方案：\n\n1. 复制下面的Markdown内容\n2. 在GitHub仓库中创建新文件\n3. 文件路径：src/content/blog/${fileName}\n4. 粘贴内容并提交\n5. Netlify将自动重新部署\n\n文件名：${fileName}`);
+      }
       
     } catch (error) {
       console.error('发布文章失败:', error);
