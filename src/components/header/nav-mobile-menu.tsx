@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/collapsible"
 import { cn } from "@/lib/utils"
 import { menuItems, MenuItem } from "./nav-data"
+import Link from "next/link"
 
 const MenuItemComponent: React.FC<{ item: MenuItem; depth?: number }> = ({ item, depth = 0 }) => {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -47,8 +48,8 @@ const MenuItemComponent: React.FC<{ item: MenuItem; depth?: number }> = ({ item,
   }
 
   return (
-    <a
-      href={item.href}
+    <Link
+      href={item.href || "/"}
       title={item.title}
       className={cn(
         "block py-2 text-lg font-medium transition-colors hover:text-primary",
@@ -57,7 +58,7 @@ const MenuItemComponent: React.FC<{ item: MenuItem; depth?: number }> = ({ item,
       )}
     >
       {item.title}
-    </a>
+    </Link>
   )
 }
 

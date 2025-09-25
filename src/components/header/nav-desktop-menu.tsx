@@ -54,13 +54,14 @@ export function NavDesktopMenu() {
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<"a"> & { href?: string }
+>(({ className, title, href, ...props }, ref) => {
   return (
     <li>
       <NavigationMenuLink asChild>
-        <a
+        <Link
           ref={ref}
+          href={href || "/"}
           title={title}
           className={cn(
             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
@@ -69,7 +70,7 @@ const ListItem = React.forwardRef<
           {...props}
         >
           <div className="text-2xg font-bold leading-none">{title}</div>
-        </a>
+        </Link>
       </NavigationMenuLink>
     </li>
   )
