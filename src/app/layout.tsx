@@ -66,6 +66,97 @@ export default function RootLayout({
             body {
               font-family: "LXGW WenKai Lite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
             }
+            
+            /* 微信浏览器优化样式 */
+            @media screen and (max-width: 768px) {
+              html {
+                -webkit-text-size-adjust: 100%;
+                -ms-text-size-adjust: 100%;
+                text-size-adjust: 100%;
+              }
+              
+              body {
+                -webkit-overflow-scrolling: touch;
+                overflow-x: hidden;
+                max-width: 100vw;
+                box-sizing: border-box;
+              }
+              
+              /* 防止微信浏览器缩放问题 */
+              * {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+              }
+              
+              /* 确保容器不会超出屏幕宽度 */
+              .max-w-3xl, .max-w-4xl {
+                max-width: 100vw !important;
+                padding-left: 1rem;
+                padding-right: 1rem;
+              }
+              
+              /* 优化移动端字体大小 */
+              @media screen and (max-width: 480px) {
+                html {
+                  font-size: 14px;
+                }
+                
+                .text-4xl {
+                  font-size: 1.875rem !important;
+                }
+                
+                .text-3xl {
+                  font-size: 1.5rem !important;
+                }
+                
+                .text-2xl {
+                  font-size: 1.25rem !important;
+                }
+                
+                .text-xl {
+                  font-size: 1.125rem !important;
+                }
+              }
+            }
+            
+            /* 微信浏览器特定优化 */
+            .wechat-browser {
+              -webkit-text-size-adjust: 100% !important;
+              -ms-text-size-adjust: 100% !important;
+              text-size-adjust: 100% !important;
+            }
+            
+            .wechat-browser body {
+              overflow-x: hidden !important;
+              max-width: 100vw !important;
+              width: 100% !important;
+            }
+            
+            .wechat-browser .max-w-3xl,
+            .wechat-browser .max-w-4xl {
+              max-width: calc(100vw - 2rem) !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+              padding-left: 1rem !important;
+              padding-right: 1rem !important;
+            }
+            
+            /* 微信浏览器图片优化 */
+            .wechat-browser img {
+              max-width: 100% !important;
+              height: auto !important;
+              display: block !important;
+            }
+            
+            /* 微信浏览器文字优化 */
+            .wechat-browser p,
+            .wechat-browser div,
+            .wechat-browser span {
+              word-wrap: break-word !important;
+              word-break: break-all !important;
+              overflow-wrap: break-word !important;
+            }
           `}
         </style>
         <script dangerouslySetInnerHTML={{
@@ -94,8 +185,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/boyicon.png" />
         <link rel="apple-touch-icon" href="/boyicon.png" sizes="180x180" />
         <meta name="msapplication-TileImage" content="/boyicon.png" />
-        {/* 微信相关 meta 标签 */}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        {/* 微信相关 meta 标签 - 优化viewport设置 */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

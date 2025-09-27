@@ -37,6 +37,39 @@ export default function WechatCompatibility() {
       setTimeout(() => {
         document.title = originalTitle;
       }, 100);
+      
+      // 微信浏览器缩放优化
+      const setViewport = () => {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover');
+        }
+      };
+      
+      // 立即设置viewport
+      setViewport();
+      
+      // 监听窗口大小变化，重新设置viewport
+      const handleResize = () => {
+        setViewport();
+        // 强制重新计算布局
+        document.body.style.display = 'none';
+        document.body.offsetHeight; // 触发重排
+        document.body.style.display = '';
+      };
+      
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('orientationchange', handleResize);
+      
+      // 添加微信浏览器特定的CSS类
+      document.documentElement.classList.add('wechat-browser');
+      document.body.classList.add('wechat-browser');
+      
+      // 清理函数
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('orientationchange', handleResize);
+      };
     }
   }, []);
 
