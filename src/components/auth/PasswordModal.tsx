@@ -48,7 +48,7 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full right-0 mt-2 z-50">
+    <div className="absolute top-full right-0 mt-2 z-[9999]">
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-72">
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
