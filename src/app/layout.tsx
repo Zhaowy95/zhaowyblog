@@ -5,6 +5,7 @@ import { config } from "@/lib/config";
 import WechatCompatibility from "@/components/WechatCompatibility";
 import EyeProtectionMode from "@/components/EyeProtectionMode";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import AnalyticsDataProvider from "@/components/AnalyticsDataProvider";
 
 export const metadata: Metadata = {
   title: config.site.title,
@@ -124,9 +125,11 @@ export default function RootLayout({
       <body className="min-w-md overflow-x-hidden">
         <WechatCompatibility />
         <Header />
-        {children}
+        <AnalyticsDataProvider>
+          {children}
+          <AnalyticsTracker type="page_view" />
+        </AnalyticsDataProvider>
         <EyeProtectionMode />
-        <AnalyticsTracker />
       </body>
     </html>
   );

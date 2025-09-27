@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 
 interface AnalyticsData {
   totalVisits: number;
@@ -34,12 +34,40 @@ interface AnalyticsData {
   }>;
 }
 
+// 创建Context
+const AnalyticsContext = createContext<{
+  analytics: AnalyticsData;
+  isLoading: boolean;
+}>({
+  analytics: {
+    totalVisits: 0,
+    uniqueVisitors: 0,
+    todayVisits: 0,
+    pageStats: {
+      homepage: { visits: 0, uniqueVisitors: 0 },
+      blogList: { visits: 0, uniqueVisitors: 0 },
+      analytics: { visits: 0, uniqueVisitors: 0 },
+      guestbook: { visits: 0, uniqueVisitors: 0 },
+      write: { visits: 0, uniqueVisitors: 0 },
+      other: { visits: 0, uniqueVisitors: 0 },
+    },
+    deviceStats: { mobile: 0, desktop: 0, tablet: 0 },
+    blogStats: [],
+    dailyStats: [],
+  },
+  isLoading: true,
+});
+
 // LeanCloud配置
 const LEANCLOUD_APP_ID = 'tNNnez7lGPAvJR1m7SJmdgWr-gzGzoHsz';
 const LEANCLOUD_APP_KEY = 'qQyqSoZuGOaEIj7Urq6U0A0B';
 const LEANCLOUD_SERVER_URL = 'https://tnnnez71.lc-cn-n1-shared.com';
 
 export function useAnalyticsData() {
+  return useContext(AnalyticsContext);
+}
+
+function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode }) {
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     totalVisits: 0,
     uniqueVisitors: 0,
@@ -52,11 +80,7 @@ export function useAnalyticsData() {
       write: { visits: 0, uniqueVisitors: 0 },
       other: { visits: 0, uniqueVisitors: 0 },
     },
-    deviceStats: {
-      mobile: 0,
-      desktop: 0,
-      tablet: 0,
-    },
+    deviceStats: { mobile: 0, desktop: 0, tablet: 0 },
     blogStats: [],
     dailyStats: [],
   });
@@ -65,193 +89,199 @@ export function useAnalyticsData() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        // 获取今天的开始时间
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const todayTimestamp = today.getTime();
-
-        // 获取所有访问数据，限制数量避免重复计算
-        const allDataResponse = await fetch(
-          `${LEANCLOUD_SERVER_URL}/1.1/classes/Analytics?limit=500&order=-createdAt`,
-          {
-            headers: {
-              'X-LC-Id': LEANCLOUD_APP_ID,
-              'X-LC-Key': LEANCLOUD_APP_KEY,
-            },
-          }
-        );
-        
-        if (!allDataResponse.ok) {
-          throw new Error(`LeanCloud API error: ${allDataResponse.status}`);
-        }
-        
-        const allData = await allDataResponse.json();
-        const records = allData.results || [];
-        
-        // 调试信息
-        console.log('Analytics records:', records.length);
-        console.log('Sample record:', records[0]);
-        const allIPs = records.map((r: any) => r.ip).filter(Boolean);
-        console.log('All IP addresses:', allIPs);
-        console.log('Unique IPs:', [...new Set(allIPs)]);
-
-        // 计算总访问量
-        const totalVisits = records.length;
-
-        // 计算今日访问量
-        const todayVisits = records.filter((record: any) => 
-          record.timestamp >= todayTimestamp
-        ).length;
-
-        // 基于IP计算独立访客
-        const uniqueIPs = new Set(records.map((record: any) => record.ip).filter(Boolean));
-        const uniqueVisitors = uniqueIPs.size;
-
-        // 按页面维度统计
-        const pageStats = {
-          homepage: { visits: 0, uniqueVisitors: 0 },
-          blogList: { visits: 0, uniqueVisitors: 0 },
-          analytics: { visits: 0, uniqueVisitors: 0 },
-          guestbook: { visits: 0, uniqueVisitors: 0 },
-          write: { visits: 0, uniqueVisitors: 0 },
-          other: { visits: 0, uniqueVisitors: 0 },
-        };
-
-        // 统计各页面访问量
-        records.forEach((record: any) => {
-          const path = record.path || '';
-          const ip = record.ip;
-          
-          console.log('Processing record:', { path, type: record.type });
-          
-          if (path === '/' || path === '') {
-            pageStats.homepage.visits++;
-          } else if (path === '/blog') {
-            pageStats.blogList.visits++;
-          } else if (path === '/analytics') {
-            pageStats.analytics.visits++;
-          } else if (path === '/guestbook') {
-            pageStats.guestbook.visits++;
-          } else if (path === '/write') {
-            pageStats.write.visits++;
-          } else if (path.startsWith('/blog/')) {
-            // 文章详情页
-            pageStats.other.visits++;
-          } else {
-            // 其他页面
-            pageStats.other.visits++;
-          }
-        });
-
-        // 计算各页面独立访客数
-        const homepageIPs = new Set(records.filter((r: any) => r.path === '/' || r.path === '').map((r: any) => r.ip).filter(Boolean));
-        const blogListIPs = new Set(records.filter((r: any) => r.path === '/blog').map((r: any) => r.ip).filter(Boolean));
-        const analyticsIPs = new Set(records.filter((r: any) => r.path === '/analytics').map((r: any) => r.ip).filter(Boolean));
-        const guestbookIPs = new Set(records.filter((r: any) => r.path === '/guestbook').map((r: any) => r.ip).filter(Boolean));
-        const writeIPs = new Set(records.filter((r: any) => r.path === '/write').map((r: any) => r.ip).filter(Boolean));
-        const otherIPs = new Set(records.filter((r: any) => 
-          !['/', '/blog', '/analytics', '/guestbook', '/write'].includes(r.path)
-        ).map((r: any) => r.ip).filter(Boolean));
-
-        pageStats.homepage.uniqueVisitors = homepageIPs.size;
-        pageStats.blogList.uniqueVisitors = blogListIPs.size;
-        pageStats.analytics.uniqueVisitors = analyticsIPs.size;
-        pageStats.guestbook.uniqueVisitors = guestbookIPs.size;
-        pageStats.write.uniqueVisitors = writeIPs.size;
-        pageStats.other.uniqueVisitors = otherIPs.size;
-
-        // 获取设备统计
-        const deviceStats = {
-          mobile: 0,
-          desktop: 0,
-          tablet: 0,
-        };
-        
-        records.forEach((record: any) => {
-          if (record.deviceType === 'mobile') deviceStats.mobile++;
-          if (record.deviceType === 'desktop') deviceStats.desktop++;
-          if (record.deviceType === 'tablet') deviceStats.tablet++;
-        });
-
-        // 获取博客文章统计
-        const blogViews = records.filter((record: any) => record.type === 'blog_view');
-        const blogStatsMap = new Map();
-        
-        blogViews.forEach((record: any) => {
-          const key = record.blogSlug || 'unknown';
-          if (!blogStatsMap.has(key)) {
-            blogStatsMap.set(key, {
-              title: record.blogTitle || '未知标题',
-              slug: record.blogSlug || 'unknown',
-              views: 0,
-              uniqueViews: new Set()
-            });
-          }
-          const blogStat = blogStatsMap.get(key);
-          blogStat.views++;
-          if (record.ip) blogStat.uniqueViews.add(record.ip);
-        });
-
-        const blogStats = Array.from(blogStatsMap.values()).map(stat => ({
-          ...stat,
-          uniqueViews: stat.uniqueViews.size,
-          todayViews: 0, // 今天访问量
-          todayUniqueViews: 0 // 今天独立访客
-        })).sort((a, b) => b.views - a.views).slice(0, 10);
-
-        // 计算近7天数据（按时间倒序）
-        const dailyStats = [];
-        for (let i = 0; i <= 6; i++) {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          date.setHours(0, 0, 0, 0);
-          const startOfDay = date.getTime();
-          const endOfDay = startOfDay + 24 * 60 * 60 * 1000 - 1;
-          
-          const dayRecords = records.filter((record: any) => {
-            const recordTime = parseInt(record.timestamp);
-            return recordTime >= startOfDay && recordTime <= endOfDay;
-          });
-          
-          const dayIPs = new Set(dayRecords.map((r: any) => r.ip).filter(Boolean));
-          
-          dailyStats.push({
-            date: date.toISOString().split('T')[0],
-            visits: dayRecords.length,
-            uniqueVisitors: dayIPs.size
-          });
-        }
-
-        // 计算文章今天数据
-        const todayBlogStats = blogStats.map(blog => {
-          const todayBlogRecords = records.filter((record: any) => {
-            const recordTime = parseInt(record.timestamp);
-            return recordTime >= todayTimestamp && 
-                   record.type === 'blog_view' && 
-                   record.blogSlug === blog.slug;
-          });
-          
-          const todayBlogIPs = new Set(todayBlogRecords.map((r: any) => r.ip).filter(Boolean));
-          
-          return {
-            ...blog,
-            todayViews: todayBlogRecords.length,
-            todayUniqueViews: todayBlogIPs.size
+        // 动态加载LeanCloud SDK
+        if (!window.AV) {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/leancloud-storage@4.12.0/dist/av-min.js';
+          script.onload = () => {
+            initializeLeanCloud();
           };
-        });
-
-        setAnalytics({
-          totalVisits,
-          uniqueVisitors,
-          todayVisits,
-          pageStats,
-          deviceStats,
-          blogStats: todayBlogStats,
-          dailyStats,
-        });
+          document.head.appendChild(script);
+          return;
+        }
+        
+        initializeLeanCloud();
       } catch (error) {
         console.error('Analytics data fetch error:', error);
-        // 保持默认值
+        setIsLoading(false);
+      }
+    };
+
+    const initializeLeanCloud = () => {
+      try {
+        // 初始化LeanCloud
+        window.AV.init({
+          appId: LEANCLOUD_APP_ID,
+          appKey: LEANCLOUD_APP_KEY,
+          serverURL: LEANCLOUD_SERVER_URL
+        });
+
+        // 获取所有分析数据
+        const Analytics = window.AV.Object.extend('Analytics');
+        const query = new window.AV.Query(Analytics);
+        query.limit(500);
+        query.descending('createdAt');
+
+        query.find().then((records: any[]) => {
+          console.log('Analytics records:', records.length);
+          
+          if (records.length === 0) {
+            setIsLoading(false);
+            return;
+          }
+
+          // 计算总体统计
+          const totalVisits = records.length;
+          const todayTimestamp = new Date();
+          todayTimestamp.setHours(0, 0, 0, 0);
+          const todayVisits = records.filter((record: any) => {
+            const recordTime = parseInt(record.get('timestamp'));
+            return recordTime >= todayTimestamp.getTime();
+          }).length;
+
+          // 计算独立访客（基于IP）
+          const allIPs = records.map((record: any) => record.get('ip')).filter(Boolean);
+          const uniqueVisitors = new Set(allIPs).size;
+
+          // 计算页面级统计
+          const pageStats = {
+            homepage: { visits: 0, uniqueVisitors: 0 },
+            blogList: { visits: 0, uniqueVisitors: 0 },
+            analytics: { visits: 0, uniqueVisitors: 0 },
+            guestbook: { visits: 0, uniqueVisitors: 0 },
+            write: { visits: 0, uniqueVisitors: 0 },
+            other: { visits: 0, uniqueVisitors: 0 },
+          };
+
+          records.forEach((record: any) => {
+            const path = record.get('path') || '';
+            if (path === '/' || path === '') {
+              pageStats.homepage.visits++;
+            } else if (path === '/blog') {
+              pageStats.blogList.visits++;
+            } else if (path === '/analytics') {
+              pageStats.analytics.visits++;
+            } else if (path === '/guestbook') {
+              pageStats.guestbook.visits++;
+            } else if (path === '/write') {
+              pageStats.write.visits++;
+            } else if (path.startsWith('/blog/')) {
+              pageStats.other.visits++;
+            } else {
+              pageStats.other.visits++;
+            }
+          });
+
+          // 计算各页面独立访客
+          const homepageIPs = new Set(records.filter((r: any) => r.get('path') === '/' || r.get('path') === '').map((r: any) => r.get('ip')).filter(Boolean));
+          const blogListIPs = new Set(records.filter((r: any) => r.get('path') === '/blog').map((r: any) => r.get('ip')).filter(Boolean));
+          const analyticsIPs = new Set(records.filter((r: any) => r.get('path') === '/analytics').map((r: any) => r.get('ip')).filter(Boolean));
+          const guestbookIPs = new Set(records.filter((r: any) => r.get('path') === '/guestbook').map((r: any) => r.get('ip')).filter(Boolean));
+          const writeIPs = new Set(records.filter((r: any) => r.get('path') === '/write').map((r: any) => r.get('ip')).filter(Boolean));
+          const otherIPs = new Set(records.filter((r: any) => {
+            const path = r.get('path') || '';
+            return path.startsWith('/blog/') || (path !== '/' && path !== '/blog' && path !== '/analytics' && path !== '/guestbook' && path !== '/write');
+          }).map((r: any) => r.get('ip')).filter(Boolean));
+
+          pageStats.homepage.uniqueVisitors = homepageIPs.size;
+          pageStats.blogList.uniqueVisitors = blogListIPs.size;
+          pageStats.analytics.uniqueVisitors = analyticsIPs.size;
+          pageStats.guestbook.uniqueVisitors = guestbookIPs.size;
+          pageStats.write.uniqueVisitors = writeIPs.size;
+          pageStats.other.uniqueVisitors = otherIPs.size;
+
+          // 计算设备统计
+          const deviceStats = { mobile: 0, desktop: 0, tablet: 0 };
+          records.forEach((record: any) => {
+            const device = record.get('device') || 'desktop';
+            if (device === 'mobile') deviceStats.mobile++;
+            else if (device === 'tablet') deviceStats.tablet++;
+            else deviceStats.desktop++;
+          });
+
+          // 计算文章统计
+          const blogViews: { [key: string]: { views: number; uniqueViews: number; todayViews: number; todayUniqueViews: number } } = {};
+          
+          records.forEach((record: any) => {
+            if (record.get('type') === 'blog_view') {
+              const slug = record.get('blogSlug');
+              const title = record.get('blogTitle');
+              if (slug && title) {
+                if (!blogViews[slug]) {
+                  blogViews[slug] = { views: 0, uniqueViews: 0, todayViews: 0, todayUniqueViews: 0 };
+                }
+                blogViews[slug].views++;
+              }
+            }
+          });
+
+          // 计算文章独立访客
+          Object.keys(blogViews).forEach(slug => {
+            const blogRecords = records.filter((r: any) => r.get('type') === 'blog_view' && r.get('blogSlug') === slug);
+            const uniqueIPs = new Set(blogRecords.map((r: any) => r.get('ip')).filter(Boolean));
+            blogViews[slug].uniqueViews = uniqueIPs.size;
+          });
+
+          // 计算今日文章访问
+          Object.keys(blogViews).forEach(slug => {
+            const todayBlogRecords = records.filter((record: any) => {
+              const recordTime = parseInt(record.get('timestamp'));
+              return recordTime >= todayTimestamp.getTime() && 
+                     record.get('type') === 'blog_view' && 
+                     record.get('blogSlug') === slug;
+            });
+            blogViews[slug].todayViews = todayBlogRecords.length;
+            
+            const todayBlogIPs = new Set(todayBlogRecords.map((r: any) => r.get('ip')).filter(Boolean));
+            blogViews[slug].todayUniqueViews = todayBlogIPs.size;
+          });
+
+          const blogStats = Object.keys(blogViews).map(slug => ({
+            title: records.find((r: any) => r.get('blogSlug') === slug)?.get('blogTitle') || 'Unknown',
+            slug,
+            views: blogViews[slug].views,
+            uniqueViews: blogViews[slug].uniqueViews,
+            todayViews: blogViews[slug].todayViews,
+            todayUniqueViews: blogViews[slug].todayUniqueViews,
+          })).sort((a, b) => b.views - a.views);
+
+          // 计算近7天趋势
+          const dailyStats = [];
+          for (let i = 0; i <= 6; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            date.setHours(0, 0, 0, 0);
+            const startOfDay = date.getTime();
+            const endOfDay = startOfDay + 24 * 60 * 60 * 1000 - 1;
+            
+            const dayRecords = records.filter((record: any) => {
+              const recordTime = parseInt(record.get('timestamp'));
+              return recordTime >= startOfDay && recordTime <= endOfDay;
+            });
+            
+            const dayIPs = new Set(dayRecords.map((r: any) => r.get('ip')).filter(Boolean));
+            
+            dailyStats.push({
+              date: date.toISOString().split('T')[0],
+              visits: dayRecords.length,
+              uniqueVisitors: dayIPs.size
+            });
+          }
+
+          setAnalytics({
+            totalVisits,
+            uniqueVisitors,
+            todayVisits,
+            pageStats,
+            deviceStats,
+            blogStats,
+            dailyStats,
+          });
+        }).catch((error: any) => {
+          console.error('LeanCloud query error:', error);
+        });
+      } catch (error) {
+        console.error('LeanCloud initialization error:', error);
       } finally {
         setIsLoading(false);
       }
@@ -260,5 +290,18 @@ export function useAnalyticsData() {
     fetchAnalytics();
   }, []);
 
-  return { analytics, isLoading };
+  return (
+    <AnalyticsContext.Provider value={{ analytics, isLoading }}>
+      {children}
+    </AnalyticsContext.Provider>
+  );
+}
+
+// Context Provider组件
+export default function AnalyticsDataProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <AnalyticsDataProviderInternal>
+      {children}
+    </AnalyticsDataProviderInternal>
+  );
 }

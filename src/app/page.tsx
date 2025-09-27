@@ -6,7 +6,6 @@ import Image from "next/image";
 import count from 'word-count'
 import { config } from "@/lib/config";
 import { formatDate } from "@/lib/utils";
-import FeaturedBlogsList from "@/components/FeaturedBlogsList";
 import { useState } from "react";
 
 export default function Home() {
@@ -17,8 +16,11 @@ export default function Home() {
     .filter((blog: any) => blog.featured === true)
     .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  const allBlogsSorted = allBlogs
-    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const allBlogsSorted = allBlogs.sort((a: any, b: any) => {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 
 
   // 获取推荐文章的slug列表，用于去重
@@ -75,7 +77,7 @@ export default function Home() {
         <div className="text-left">
           <h1 className="text-4xl font-bold mb-3">{config.site.title}</h1>
           <p className="text-md text-gray-600 mb-2">{config.author.bio}</p>
-          <p className="text-md text-gray-600">国内大厂产品 | 认真生活家 | 理想主义者</p>
+          <p className="text-md text-gray-600">腾讯音乐PM | 认真生活 | 理想主义者</p>
         </div>
         
         {/* 社交链接 - 仅当有链接时才显示 */}
@@ -106,69 +108,58 @@ export default function Home() {
         )}
       </div>
 
-      {/* 近期文章 */}
+      {/* 文章列表 */}
       <div className="space-y-8">
-        <h2 className="text-2xl font-bold text-left">近期文章</h2>
-        <FeaturedBlogsList 
-          initialFeaturedBlogs={featuredBlogs} 
-          selectedTag={selectedTag}
-        />
-        {filteredBlogs.filter((blog: any) => !featuredSlugs.includes(blog.slug)).slice(0, 4).map((blog: any) => (
+        {filteredBlogs.slice(0, 5).map((blog: any) => (
             <article key={blog.slug} className="group">
-              <Link href={`/blog/${blog.slug}`} className="block">
-                <div className="flex flex-col space-y-2 transition-transform group-hover:translate-x-1">
+              <div className="flex flex-col space-y-2 transition-transform group-hover:translate-x-1">
+                <Link href={`/blog/${blog.slug}`} className="block">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <h2 className="text-xl font-semibold underline underline-offset-4 group-hover:text-blue-600 transition-colors flex-shrink-0">
-                        {blog.title}
-                      </h2>
-                      {/* 标签放在标题后面，一行展示 */}
-                      {((blog.tags && blog.tags.length > 0) || (blog.keywords && blog.keywords.length > 0)) && (
-                        <div className="flex gap-1 overflow-hidden">
-                          {blog.tags && blog.tags.map((tag: string, index: number) => (
-                            <span 
-                              key={`tag-${index}`} 
-                              className={`px-2 py-1 text-xs rounded whitespace-nowrap ${
-                                selectedTag === tag 
-                                  ? 'bg-blue-500 text-white' 
-                                  : 'bg-gray-100 text-gray-600'
-                              }`}
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          {blog.keywords && blog.keywords.map((keyword: string, index: number) => (
-                            <span 
-                              key={`keyword-${index}`} 
-                              className={`px-2 py-1 text-xs rounded whitespace-nowrap ${
-                                selectedTag === keyword 
-                                  ? 'bg-blue-500 text-white' 
-                                  : 'bg-gray-100 text-gray-600'
-                              }`}
-                            >
-                              {keyword}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-sm text-gray-500 flex-shrink-0 ml-2">
+                    <h2 className="text-xl font-semibold underline underline-offset-4 group-hover:text-blue-600 transition-colors">
+                      {blog.title}
+                    </h2>
+                    <span className="text-sm text-gray-500">
                       {formatDate(blog.date)} · {count(blog.content)} 字
                     </span>
                   </div>
                   <p className="text-gray-600 line-clamp-2">
                     {blog.summary}
                   </p>
-                </div>
-              </Link>
+                </Link>
+                {/* 标签放在摘要下面 */}
+                {((blog.tags && blog.tags.length > 0) || (blog.keywords && blog.keywords.length > 0)) && (
+                  <div className="flex gap-1 flex-wrap">
+                    {blog.tags && blog.tags.map((tag: string, index: number) => (
+                      <Link
+                        key={`tag-${index}`}
+                        href={`/blog?tag=${encodeURIComponent(tag)}`}
+                        className="px-2 py-1 text-xs rounded whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-blue-500 hover:text-white transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {tag}
+                      </Link>
+                    ))}
+                    {blog.keywords && blog.keywords.map((keyword: string, index: number) => (
+                      <Link
+                        key={`keyword-${index}`}
+                        href={`/blog?tag=${encodeURIComponent(keyword)}`}
+                        className="px-2 py-1 text-xs rounded whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-blue-500 hover:text-white transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {keyword}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </article>
         ))}
         
-        {/* 查看更多按钮 */}
+        {/* 查看更多链接 */}
         <div className="text-center mt-8">
           <Link 
             href="/blog" 
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="text-gray-600 hover:text-gray-800 transition-colors"
           >
             查看更多 &gt;
           </Link>

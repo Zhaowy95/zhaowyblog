@@ -17,10 +17,6 @@ export default function AnalyticsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">网站统计</h1>
-        <p className="text-gray-600">实时监控网站访问情况和内容表现</p>
-      </div>
 
       {/* 总体统计 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -59,43 +55,6 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* 页面维度统计 */}
-      <div className="bg-white rounded-lg shadow p-6 mb-8">
-        <h3 className="text-xl font-semibold mb-4">页面访问统计</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="text-center p-4 border rounded-lg">
-            <div className="text-lg font-semibold text-gray-700 mb-2">主页</div>
-            <div className="text-2xl font-bold text-blue-600">{analytics.pageStats.homepage.visits}</div>
-            <div className="text-sm text-gray-500">独立访客: {analytics.pageStats.homepage.uniqueVisitors}</div>
-          </div>
-          <div className="text-center p-4 border rounded-lg">
-            <div className="text-lg font-semibold text-gray-700 mb-2">文章列表</div>
-            <div className="text-2xl font-bold text-green-600">{analytics.pageStats.blogList.visits}</div>
-            <div className="text-sm text-gray-500">独立访客: {analytics.pageStats.blogList.uniqueVisitors}</div>
-          </div>
-          <div className="text-center p-4 border rounded-lg">
-            <div className="text-lg font-semibold text-gray-700 mb-2">统计页</div>
-            <div className="text-2xl font-bold text-purple-600">{analytics.pageStats.analytics.visits}</div>
-            <div className="text-sm text-gray-500">独立访客: {analytics.pageStats.analytics.uniqueVisitors}</div>
-          </div>
-          <div className="text-center p-4 border rounded-lg">
-            <div className="text-lg font-semibold text-gray-700 mb-2">留言板</div>
-            <div className="text-2xl font-bold text-orange-600">{analytics.pageStats.guestbook.visits}</div>
-            <div className="text-sm text-gray-500">独立访客: {analytics.pageStats.guestbook.uniqueVisitors}</div>
-          </div>
-          <div className="text-center p-4 border rounded-lg">
-            <div className="text-lg font-semibold text-gray-700 mb-2">写作页</div>
-            <div className="text-2xl font-bold text-red-600">{analytics.pageStats.write.visits}</div>
-            <div className="text-sm text-gray-500">独立访客: {analytics.pageStats.write.uniqueVisitors}</div>
-          </div>
-          <div className="text-center p-4 border rounded-lg">
-            <div className="text-lg font-semibold text-gray-700 mb-2">其他页面</div>
-            <div className="text-2xl font-bold text-gray-600">{analytics.pageStats.other.visits}</div>
-            <div className="text-sm text-gray-500">独立访客: {analytics.pageStats.other.uniqueVisitors}</div>
-            <div className="text-xs text-gray-400 mt-1">包含文章详情页</div>
-          </div>
-        </div>
-      </div>
 
       {/* 设备统计 */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">

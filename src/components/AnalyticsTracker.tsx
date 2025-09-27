@@ -117,7 +117,13 @@ export default function AnalyticsTracker({
             appKey: 'qQyqSoZuGOaEIj7Urq6U0A0B',
             serverURL: 'https://tnnnez71.lc-cn-n1-shared.com'
           });
-          console.log('LeanCloud SDK initialized');
+          
+          // 设置存储适配器
+          if (window.AV.setStorage) {
+            window.AV.setStorage(window.AV.Storage);
+          }
+          
+          console.log('LeanCloud SDK initialized with storage adapter');
         }
 
         // 创建Analytics对象
