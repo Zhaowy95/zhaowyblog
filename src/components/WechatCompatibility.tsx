@@ -26,20 +26,30 @@ export default function WechatCompatibility() {
         width: 100% !important;
       }
       
-      /* 微信浏览器Sheet组件特殊处理 - 左侧小半屏效果 */
+      /* 微信浏览器Sheet组件特殊处理 - 左侧40%宽度，支持滑动动画 */
       .wechat-browser [data-slot="sheet-content"] {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         bottom: 0 !important;
-        width: 75vw !important;
-        max-width: 300px !important;
+        width: 40vw !important;
         height: 100vh !important;
         z-index: 9999 !important;
-        transform: none !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease-in-out !important;
         border-right: 1px solid #e5e7eb !important;
         border-radius: 0 !important;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1) !important;
+      }
+      
+      /* 微信浏览器Sheet组件打开状态 */
+      .wechat-browser [data-slot="sheet-content"][data-state="open"] {
+        transform: translateX(0) !important;
+      }
+      
+      /* 微信浏览器Sheet组件关闭状态 */
+      .wechat-browser [data-slot="sheet-content"][data-state="closed"] {
+        transform: translateX(-100%) !important;
       }
       
       .wechat-browser [data-slot="sheet-overlay"] {
@@ -51,6 +61,8 @@ export default function WechatCompatibility() {
         width: 100vw !important;
         height: 100vh !important;
         z-index: 9998 !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        transition: opacity 0.3s ease-in-out !important;
       }
       
       /* 微信浏览器中防止页面滚动 */
