@@ -35,7 +35,7 @@ export function Header() {
         initial={{ maxWidth: "48rem" }}
         animate={{ maxWidth: isWidePage ? "72rem" : "48rem" }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className={`container mx-auto flex h-16 items-center justify-between md:px-4 ${
+        className={`container mx-auto flex h-16 items-center justify-between px-4 ${
           isWidePage ? "max-w-6xl" : "max-w-3xl"
         }`}
       >
