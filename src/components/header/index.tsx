@@ -6,14 +6,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { NavDesktopMenu } from "./nav-desktop-menu";
 import { NavMobileMenu } from "./nav-mobile-menu";
-import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 // import { SquareTerminal } from "lucide-react";
 import { config } from "@/lib/config";
 import PasswordModal from "@/components/auth/PasswordModal";
 
 export function Header() {
-  const pathname = usePathname();
   const router = useRouter();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
