@@ -8,7 +8,12 @@ export default function EyeProtectionMode() {
   useEffect(() => {
     // 从localStorage读取护眼模式状态，如果没有设置则默认为开启
     const savedMode = localStorage.getItem("eye-protection-mode");
-    if (savedMode === null || savedMode === "true") {
+    if (savedMode === null) {
+      // 首次访问，默认开启护眼模式
+      setIsEnabled(true);
+      document.body.classList.add("eye-protection-mode");
+      localStorage.setItem("eye-protection-mode", "true");
+    } else if (savedMode === "true") {
       setIsEnabled(true);
       document.body.classList.add("eye-protection-mode");
     } else if (savedMode === "false") {
@@ -33,7 +38,7 @@ export default function EyeProtectionMode() {
   return (
     <button
       onClick={toggleEyeProtection}
-      className={`fixed bottom-4 right-4 z-50 p-3 rounded-full shadow-lg transition-all duration-300 md:bottom-4 md:right-4 ${
+      className={`fixed bottom-4 right-4 z-50 p-3 rounded-full shadow-lg transition-all duration-300 ${
         isEnabled 
           ? "bg-green-500 text-white" 
           : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -42,7 +47,11 @@ export default function EyeProtectionMode() {
         position: 'fixed',
         bottom: '1rem',
         right: '1rem',
-        zIndex: 9999
+        zIndex: 9999,
+        // 确保在移动端固定在视图右下角
+        transform: 'none',
+        // 防止按钮被其他元素遮挡
+        pointerEvents: 'auto'
       }}
       title={isEnabled ? "关闭护眼模式" : "开启护眼模式"}
     >
