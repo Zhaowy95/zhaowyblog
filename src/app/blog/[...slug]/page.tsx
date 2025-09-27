@@ -100,10 +100,10 @@ export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
     // 确保 allBlogs 被正确导入
     const blogs = allBlogs || []
     
-    // 如果没有博客文章，返回空数组
+    // 如果没有博客文章，返回一个默认的静态参数以避免构建错误
     if (blogs.length === 0) {
-      console.log('No blogs found, returning empty array for static params')
-      return []
+      console.log('No blogs found, returning default static params')
+      return [{ slug: ['no-blogs'] }]
     }
     
     console.log(`Found ${blogs.length} blogs for static generation`)
@@ -112,8 +112,8 @@ export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
     const validBlogs = blogs.filter((blog: any) => blog && blog.slug)
     
     if (validBlogs.length === 0) {
-      console.log('No valid blogs found, returning empty array')
-      return []
+      console.log('No valid blogs found, returning default static params')
+      return [{ slug: ['no-blogs'] }]
     }
     
     return validBlogs.map((blog: any) => ({
@@ -121,8 +121,8 @@ export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
     }))
   } catch (error) {
     console.error('Error in generateStaticParams:', error)
-    // 返回空数组而不是抛出错误，这样构建可以继续
-    return []
+    // 返回默认参数而不是空数组，这样构建可以继续
+    return [{ slug: ['no-blogs'] }]
   }
 }
 
@@ -215,9 +215,9 @@ export default async function BlogPage(props: BlogsPageProps) {
         {blog.summary && (
           <div className="my-6">
             <div className="relative bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-              <div className="absolute top-4 left-4 text-blue-500 text-2xl font-serif">"</div>
+              <div className="absolute top-4 left-4 text-blue-500 text-2xl font-serif">&ldquo;</div>
               <p className="text-gray-700 leading-relaxed pl-6 italic">{blog.summary}</p>
-              <div className="absolute bottom-4 right-4 text-blue-500 text-2xl font-serif">"</div>
+              <div className="absolute bottom-4 right-4 text-blue-500 text-2xl font-serif">&rdquo;</div>
             </div>
           </div>
         )}
