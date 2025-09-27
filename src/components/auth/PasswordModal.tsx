@@ -70,14 +70,21 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-3 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-sm"
+              onTouchEnd={handleClose}
+              className="flex-1 px-3 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-sm touch-manipulation"
             >
               取消
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+              onTouchEnd={(e) => {
+                if (!isLoading) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+              className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm touch-manipulation"
             >
               {isLoading ? "验证中..." : "确认"}
             </button>
