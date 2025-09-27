@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdvancedTiptapEditor from "./AdvancedTiptapEditor";
+import SimpleMarkdownEditor from "./SimpleMarkdownEditor";
 
 interface BlogPost {
   id: string;
@@ -249,7 +249,7 @@ ${post.content}`;
           <label className="block text-sm font-medium text-gray-700 mb-2">
             文章内容 *
           </label>
-          <AdvancedTiptapEditor
+          <SimpleMarkdownEditor
             content={post.content}
             onChange={handleContentChange}
             placeholder="请输入文章内容..."

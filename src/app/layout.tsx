@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { config } from "@/lib/config";
 import WechatCompatibility from "@/components/WechatCompatibility";
+import EyeProtectionMode from "@/components/EyeProtectionMode";
 
 export const metadata: Metadata = {
   title: config.site.title,
@@ -96,8 +97,8 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Zhao某人" />
-        <meta name="application-name" content="Zhao某人" />
+        <meta name="apple-mobile-web-app-title" content="ZhaoLabs" />
+        <meta name="application-name" content="ZhaoLabs" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="theme-color" content="#ffffff" />
         
@@ -123,6 +124,7 @@ export default function RootLayout({
         <WechatCompatibility />
         <Header />
         {children}
+        <EyeProtectionMode />
       </body>
     </html>
   );

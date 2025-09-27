@@ -2,8 +2,8 @@ const basePath = process.env.NODE_ENV === 'production' ? '/zhaowyblog' : '';
 
 export const config = {
   site: {
-    title: "Zhao某人",
-    name: "Zhao某人",
+    title: "ZhaoLabs",
+    name: "ZhaoLabs",
     description: "专注于产品经理转独立开发之路",
     keywords: ["产品经理", "独立开发", "前端开发", "技术博客"],
     url: "https://zhaowy95.github.io/zhaowyblog/",
@@ -27,7 +27,7 @@ export const config = {
     },
   },
   author: {
-    name: "zhaowy",
+    name: "ZhaoLabs",
     email: "zhaowy95@163.com",
     bio: "专注于产品经理转独立开发之路",
     avatar: `${basePath}/avatar.jpg`,
@@ -51,6 +51,10 @@ export const config = {
       { 
         title: "留言板", 
         href: "/guestbook",
+      },
+      { 
+        title: "统计", 
+        href: "/analytics",
       },
     ],
   },

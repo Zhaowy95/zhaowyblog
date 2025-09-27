@@ -120,3 +120,38 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 护眼模式样式 */
+.eye-protection-mode {
+  background-color: #f7f3e9 !important;
+  color: #2c3e50 !important;
+}
+
+.eye-protection-mode .bg-white {
+  background-color: #f0ead6 !important;
+  border-color: #d4c4a8 !important;
+}
+
+.eye-protection-mode .text-gray-600 {
+  color: #34495e !important;
+}
+
+.eye-protection-mode .text-gray-700 {
+  color: #2c3e50 !important;
+}
+
+.eye-protection-mode .border-gray-300 {
+  border-color: #d4c4a8 !important;
+}
+
+.eye-protection-mode .bg-gray-100 {
+  background-color: #f0ead6 !important;
+}
+
+.eye-protection-mode .bg-gray-200 {
+  background-color: #e6ddd4 !important;
+}
+
+.eye-protection-mode .hover\:bg-gray-300:hover {
+  background-color: #d4c4a8 !important;
+}

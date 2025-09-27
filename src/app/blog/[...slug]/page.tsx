@@ -17,6 +17,7 @@ import { GoToTop } from "@/components/go-to-top"
 import ValineComments from "@/components/comments/ValineComments"
 import 'katex/dist/katex.min.css';
 import { config } from "@/lib/config";
+import WechatShareOptimization from "@/components/WechatShareOptimization";
 
 type BlogsPageProps = {
   params: Promise<{slug: string[]}>
@@ -150,6 +151,12 @@ export default async function BlogPage(props: BlogsPageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <WechatShareOptimization
+        title={blog.title}
+        description={blog.summary || blog.title}
+        image={config.site.image}
+        url={absoluteUrl("/blog/" + blog.slug)}
       />
       <main className="relative py-6 max-w-full md:max-w-6xl mx-auto lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
         <div className="max-w-4xl mx-auto w-full px-6">

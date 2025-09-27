@@ -77,7 +77,8 @@ export default function Home() {
       <div className="mb-16 space-y-6">
         <div className="text-left">
           <h1 className="text-4xl font-bold mb-3">{config.site.title}</h1>
-          <p className="text-md text-gray-600">{config.author.bio}</p>
+          <p className="text-md text-gray-600 mb-2">{config.author.bio}</p>
+          <p className="text-md text-gray-600">国内大厂产品 | 认真生活家 | 理想主义者</p>
         </div>
         
         {/* 社交链接 - 仅当有链接时才显示 */}
@@ -108,18 +109,14 @@ export default function Home() {
         )}
       </div>
 
-      {/* 标签展示 */}
-      <div className="mb-6 -mt-6">
-        <TagList onTagClick={handleTagClick} selectedTag={selectedTag} />
-      </div>
-
-      {/* 所有文章 */}
+      {/* 近期文章 */}
       <div className="space-y-8">
+        <h2 className="text-2xl font-bold text-left">近期文章</h2>
         <FeaturedBlogsList 
           initialFeaturedBlogs={featuredBlogs} 
           selectedTag={selectedTag}
         />
-        {filteredBlogs.filter((blog: any) => !featuredSlugs.includes(blog.slug)).map((blog: any) => (
+        {filteredBlogs.filter((blog: any) => !featuredSlugs.includes(blog.slug)).slice(0, 4).map((blog: any) => (
             <article key={blog.slug} className="group">
               <Link href={`/blog/${blog.slug}`} className="block">
                 <div className="flex flex-col space-y-2 transition-transform group-hover:translate-x-1">
@@ -168,7 +165,17 @@ export default function Home() {
                 </div>
               </Link>
             </article>
-        )        )}
+        ))}
+        
+        {/* 查看更多按钮 */}
+        <div className="text-center mt-8">
+          <Link 
+            href="/blog" 
+            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            查看更多 >
+          </Link>
+        </div>
       </div>
       </div>
     </>
