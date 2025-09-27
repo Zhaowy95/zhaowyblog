@@ -97,16 +97,26 @@ export async function generateMetadata({ params }: BlogsPageProps): Promise<Meta
 
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   try {
+    // 确保 allBlogs 被正确导入
+    const blogs = allBlogs || []
+    
     // 如果没有博客文章，返回空数组
-    if (!allBlogs || allBlogs.length === 0) {
+    if (blogs.length === 0) {
       console.log('No blogs found, returning empty array for static params')
       return []
     }
     
-    console.log(`Found ${allBlogs.length} blogs for static generation`)
+    console.log(`Found ${blogs.length} blogs for static generation`)
     
-    // @ts-ignore
-    return allBlogs.map((blog: any) => ({
+    // 确保每个博客都有有效的 slug
+    const validBlogs = blogs.filter((blog: any) => blog && blog.slug)
+    
+    if (validBlogs.length === 0) {
+      console.log('No valid blogs found, returning empty array')
+      return []
+    }
+    
+    return validBlogs.map((blog: any) => ({
       slug: blog.slug.split('/'),
     }))
   } catch (error) {
