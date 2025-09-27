@@ -127,19 +127,41 @@ export default function RootLayout({
               text-size-adjust: 100% !important;
             }
             
+            .wechat-browser html,
             .wechat-browser body {
+              margin: 0 !important;
+              padding: 0 !important;
               overflow-x: hidden !important;
               max-width: 100vw !important;
               width: 100% !important;
+              position: relative !important;
+              left: 0 !important;
+              transform: translateX(0) !important;
             }
             
             .wechat-browser .max-w-3xl,
             .wechat-browser .max-w-4xl {
-              max-width: calc(100vw - 2rem) !important;
-              margin-left: auto !important;
-              margin-right: auto !important;
+              max-width: 100vw !important;
+              margin-left: 0 !important;
+              margin-right: 0 !important;
               padding-left: 1rem !important;
               padding-right: 1rem !important;
+              position: relative !important;
+              left: 0 !important;
+              transform: translateX(0) !important;
+            }
+            
+            /* 微信浏览器容器强制重置 */
+            .wechat-browser .container {
+              margin-left: 0 !important;
+              margin-right: 0 !important;
+              padding-left: 1rem !important;
+              padding-right: 1rem !important;
+              max-width: 100vw !important;
+              width: 100% !important;
+              position: relative !important;
+              left: 0 !important;
+              transform: translateX(0) !important;
             }
             
             /* 微信浏览器图片优化 */

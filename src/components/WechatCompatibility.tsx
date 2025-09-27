@@ -3,6 +3,32 @@
 import { useEffect } from 'react';
 
 export default function WechatCompatibility() {
+  // 同步检测微信浏览器，立即应用样式
+  if (typeof window !== 'undefined' && /micromessenger/i.test(navigator.userAgent)) {
+    // 立即添加微信浏览器CSS类，防止异步加载导致的跳动
+    document.documentElement.classList.add('wechat-browser');
+    document.body.classList.add('wechat-browser');
+    
+    // 立即应用关键样式，防止页面跳动
+    const style = document.createElement('style');
+    style.textContent = `
+      .wechat-browser .max-w-3xl,
+      .wechat-browser .max-w-4xl {
+        max-width: 100vw !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+      }
+      .wechat-browser body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   useEffect(() => {
     // 检测是否在微信浏览器中
     const isWechat = /micromessenger/i.test(navigator.userAgent);
@@ -61,10 +87,6 @@ export default function WechatCompatibility() {
       
       window.addEventListener('resize', handleResize);
       window.addEventListener('orientationchange', handleResize);
-      
-      // 添加微信浏览器特定的CSS类
-      document.documentElement.classList.add('wechat-browser');
-      document.body.classList.add('wechat-browser');
       
       // 清理函数
       return () => {
