@@ -68,7 +68,7 @@ export function NavMobileMenu() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden ml-4">
+        <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-10 w-10" />
           <span className="sr-only">Toggle menu</span>
         </Button>
