@@ -1,8 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Menu, ChevronDown, ChevronRight } from "lucide-react"
+import { ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 import {
   Sheet,
   SheetContent,
@@ -68,8 +69,14 @@ export function NavMobileMenu() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-10 w-10" />
+        <Button variant="ghost" size="icon" className="md:hidden p-2">
+          <Image 
+            src="/hamburger-icon.png" 
+            alt="Menu" 
+            width={24} 
+            height={24} 
+            className="h-6 w-6"
+          />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
