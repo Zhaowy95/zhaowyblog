@@ -195,6 +195,33 @@ export default async function BlogPage(props: BlogsPageProps) {
           </p>
         </div>
 
+        {/* 文章标签 */}
+        {blog.tags && blog.tags.length > 0 && (
+          <div className="my-4">
+            <div className="flex flex-wrap gap-2">
+              {blog.tags.map((tag: string, index: number) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 文章摘要 */}
+        {blog.summary && (
+          <div className="my-6">
+            <div className="relative bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
+              <div className="absolute top-4 left-4 text-blue-500 text-2xl font-serif">"</div>
+              <p className="text-gray-700 leading-relaxed pl-6 italic">{blog.summary}</p>
+              <div className="absolute bottom-4 right-4 text-blue-500 text-2xl font-serif">"</div>
+            </div>
+          </div>
+        )}
+
         <div className="">
           <MDXRemote source={blog.content} components={components} options={options} />
         </div>
