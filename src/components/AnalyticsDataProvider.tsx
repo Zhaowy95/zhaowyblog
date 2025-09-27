@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, createContext, useContext } from 'react';
+import { allBlogs } from 'content-collections';
 
 interface AnalyticsData {
   totalVisits: number;
@@ -236,14 +237,21 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
             blogViews[slug].todayUniqueViews = todayBlogIPs.size;
           });
 
-          const blogStats = Object.keys(blogViews).map(slug => ({
-            title: records.find((r: any) => r.get('blogSlug') === slug)?.get('blogTitle') || 'Unknown',
-            slug,
-            views: blogViews[slug].views,
-            uniqueViews: blogViews[slug].uniqueViews,
-            todayViews: blogViews[slug].todayViews,
-            todayUniqueViews: blogViews[slug].todayUniqueViews,
-          })).sort((a, b) => b.views - a.views);
+          // 获取当前存在的博客文章列表
+          const currentBlogSlugs = new Set(allBlogs.map((blog: any) => blog.slug));
+          
+          // 只显示当前存在的博客文章的统计数据
+          const blogStats = Object.keys(blogViews)
+            .filter(slug => currentBlogSlugs.has(slug)) // 只保留当前存在的博客
+            .map(slug => ({
+              title: records.find((r: any) => r.get('blogSlug') === slug)?.get('blogTitle') || 'Unknown',
+              slug,
+              views: blogViews[slug].views,
+              uniqueViews: blogViews[slug].uniqueViews,
+              todayViews: blogViews[slug].todayViews,
+              todayUniqueViews: blogViews[slug].todayUniqueViews,
+            }))
+            .sort((a, b) => b.views - a.views);
 
           // 计算近7天趋势
           const dailyStats = [];
