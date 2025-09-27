@@ -59,7 +59,7 @@ export const config = {
     ],
   },
   auth: {
-    password: "123456",
+    password: process.env.BLOG_AUTH_PASSWORD || "123456",
   },
   seo: {
     metadataBase: new URL("https://zhaowy95.github.io/zhaowyblog/"),
