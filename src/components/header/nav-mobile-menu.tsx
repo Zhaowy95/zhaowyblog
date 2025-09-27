@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 import { menuItems, MenuItem } from "./nav-data"
 import Link from "next/link"
 
-const MenuItemComponent: React.FC<{ item: MenuItem; depth?: number }> = ({ item, depth = 0 }) => {
+const MenuItemComponent: React.FC<{ item: MenuItem; depth?: number; onClose?: () => void }> = ({ item, depth = 0, onClose }) => {
   const [isOpen, setIsOpen] = React.useState(false)
 
   if (item.submenu) {
@@ -40,7 +40,7 @@ const MenuItemComponent: React.FC<{ item: MenuItem; depth?: number }> = ({ item,
         </CollapsibleTrigger>
         <CollapsibleContent>
           {item.submenu.map((subItem) => (
-            <MenuItemComponent key={subItem.title} item={subItem} depth={depth + 1} />
+            <MenuItemComponent key={subItem.title} item={subItem} depth={depth + 1} onClose={onClose} />
           ))}
         </CollapsibleContent>
       </Collapsible>
@@ -56,6 +56,7 @@ const MenuItemComponent: React.FC<{ item: MenuItem; depth?: number }> = ({ item,
         depth > 0 && "pl-4",
         item.href === "/" && "text-primary"
       )}
+      onClick={onClose}
     >
       {item.title}
     </Link>
@@ -78,7 +79,7 @@ export function NavMobileMenu() {
       <SheetContent side="left" className="w-[240px] sm:w-[300px]">
         <nav className="flex flex-col space-y-4 ml-4 mt-4">
           {menuItems.map((item) => (
-            <MenuItemComponent key={item.title} item={item} />
+            <MenuItemComponent key={item.title} item={item} onClose={() => setOpen(false)} />
           ))}
         </nav>
       </SheetContent>

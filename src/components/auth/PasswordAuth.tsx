@@ -25,11 +25,13 @@ export default function PasswordAuth({ onSuccess }: PasswordAuthProps) {
         // 保存认证状态到 localStorage
         localStorage.setItem("blog-auth", "true");
         localStorage.setItem("blog-auth-time", Date.now().toString());
+        console.log("密码验证成功，调用onSuccess回调");
         onSuccess();
       } else {
         setError("密码错误，请重新输入");
       }
-    } catch {
+    } catch (error) {
+      console.error("认证错误:", error);
       setError("验证失败，请重试");
     } finally {
       setIsLoading(false);
