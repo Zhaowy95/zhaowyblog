@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { NavDesktopMenu } from "./nav-desktop-menu";
 import { NavMobileMenu } from "./nav-mobile-menu";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 // import { SquareTerminal } from "lucide-react";
 import { config } from "@/lib/config";
@@ -15,7 +14,6 @@ import PasswordModal from "@/components/auth/PasswordModal";
 
 export function Header() {
   const pathname = usePathname();
-  const isBlogPage = pathname.includes("/blog/") || pathname.includes("/write");
   const router = useRouter();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
@@ -33,9 +31,9 @@ export function Header() {
     <header className="pt-4">
       <motion.div
         initial={{ maxWidth: "48rem" }}
-        animate={{ maxWidth: isBlogPage ? "72rem" : "48rem" }}
+        animate={{ maxWidth: "48rem" }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className={cn("container mx-auto flex h-16 items-center justify-between md:px-4", isBlogPage ? "max-w-4xl xl:max-w-6xl" : "max-w-3xl")}
+        className="container mx-auto flex h-16 items-center justify-between md:px-4 max-w-3xl"
       >
         {/* Mobile navigation */}
         <NavMobileMenu />
