@@ -18,6 +18,7 @@ import ValineComments from "@/components/comments/ValineComments"
 import 'katex/dist/katex.min.css';
 import { config } from "@/lib/config";
 import WechatShareOptimization from "@/components/WechatShareOptimization";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 type BlogsPageProps = {
   params: Promise<{slug: string[]}>
@@ -186,6 +187,13 @@ export default async function BlogPage(props: BlogsPageProps) {
         </div>
       </div>
       </main>
+      
+      {/* 博客文章浏览统计 */}
+      <AnalyticsTracker 
+        type="blog_view" 
+        blogSlug={blog.slug} 
+        blogTitle={blog.title}
+      />
     </>
   );
 }

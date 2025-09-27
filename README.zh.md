@@ -1,4 +1,9 @@
-<h1 align=center>Nextjs Blog Template | Ladder Theme | <a href="https://guangzhengli.com">Blog</a></h1>
+<h1 align=center>ZhaoLabs Blog v1.0.0 | Next.js 博客模板 | <a href="https://zhaowy95.github.io/zhaowyblog/">在线演示</a></h1>
+
+[![版本](https://img.shields.io/badge/版本-1.0.0-blue.svg)](https://github.com/Zhaowy95/zhaowyblog)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC.svg)](https://tailwindcss.com/)
 
 本仓库是 [hugo-ladder-theme](https://github.com/guangzhengli/hugo-theme-ladder) 的 Nextjs 实现。
 

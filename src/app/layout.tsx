@@ -4,6 +4,7 @@ import { Header } from "@/components/header";
 import { config } from "@/lib/config";
 import WechatCompatibility from "@/components/WechatCompatibility";
 import EyeProtectionMode from "@/components/EyeProtectionMode";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 export const metadata: Metadata = {
   title: config.site.title,
@@ -125,6 +126,7 @@ export default function RootLayout({
         <Header />
         {children}
         <EyeProtectionMode />
+        <AnalyticsTracker />
       </body>
     </html>
   );

@@ -5,10 +5,20 @@ import Link from "next/link";
 import count from 'word-count'
 import { formatDate } from "@/lib/utils";
 import TagList from "@/components/ui/TagList";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function BlogPage() {
+function BlogPageContent() {
   const [selectedTag, setSelectedTag] = useState<string | undefined>();
+  const searchParams = useSearchParams();
+  
+  // 从URL参数中读取标签
+  useEffect(() => {
+    const tagFromUrl = searchParams.get('tag');
+    if (tagFromUrl) {
+      setSelectedTag(decodeURIComponent(tagFromUrl));
+    }
+  }, [searchParams]);
   
   const allBlogsSorted = allBlogs
     .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -21,7 +31,17 @@ export default function BlogPage() {
     : allBlogsSorted;
 
   const handleTagClick = (tag: string) => {
-    setSelectedTag(selectedTag === tag ? undefined : tag);
+    const newSelectedTag = selectedTag === tag ? undefined : tag;
+    setSelectedTag(newSelectedTag);
+    
+    // 更新URL参数
+    const url = new URL(window.location.href);
+    if (newSelectedTag) {
+      url.searchParams.set('tag', newSelectedTag);
+    } else {
+      url.searchParams.delete('tag');
+    }
+    window.history.replaceState({}, '', url.toString());
   };
 
   return (
@@ -86,5 +106,19 @@ export default function BlogPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    }>
+      <BlogPageContent />
+    </Suspense>
   );
 }

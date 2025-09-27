@@ -1,8 +1,8 @@
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "留言板 | ZhaoLabs",
-  description: "欢迎在这里留下您的想法、建议或任何想说的话",
+  title: "统计 | ZhaoLabs",
+  description: "网站访问统计和数据分析",
   icons: [
     { rel: "icon", url: "/boyicon.png", sizes: "16x16", type: "image/png" },
     { rel: "icon", url: "/boyicon.png", sizes: "32x32", type: "image/png" },
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function GuestbookLayout({
+export default function AnalyticsLayout({
   children,
 }: {
   children: React.ReactNode;

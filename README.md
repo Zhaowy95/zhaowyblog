@@ -1,6 +1,11 @@
 # [中文文档](README.zh.md)
 
-<h1 align=center>Nextjs Blog Template | Ladder Theme | <a href="https://guangzhengli.com">Blog</a></h1>
+<h1 align=center>ZhaoLabs Blog v1.0.0 | Next.js Blog Template | <a href="https://zhaowy95.github.io/zhaowyblog/">Live Demo</a></h1>
+
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Zhaowy95/zhaowyblog)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC.svg)](https://tailwindcss.com/)
 
 This repository is a Next.js implementation of the [hugo-ladder-theme](https://github.com/guangzhengli/hugo-theme-ladder).
 
