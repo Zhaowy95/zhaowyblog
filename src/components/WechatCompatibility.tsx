@@ -25,6 +25,42 @@ export default function WechatCompatibility() {
         max-width: 100vw !important;
         width: 100% !important;
       }
+      
+      /* 微信浏览器Sheet组件特殊处理 */
+      .wechat-browser [data-slot="sheet-content"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        z-index: 9999 !important;
+        transform: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+      }
+      
+      .wechat-browser [data-slot="sheet-overlay"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 9998 !important;
+      }
+      
+      /* 微信浏览器中防止页面滚动 */
+      .wechat-browser body.sheet-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
     `;
     document.head.appendChild(style);
   }
