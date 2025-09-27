@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { config } from "@/lib/config";
 
 interface PasswordModalProps {
@@ -13,6 +13,26 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // 处理键盘事件
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      // 防止背景滚动
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,17 +67,30 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full right-0 mt-2 z-50">
-      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-72">
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50"
+      onClick={handleClose}
+    >
+      <div 
+        className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-72 mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
               placeholder="请输入验证密码"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               autoFocus
+              autoComplete="current-password"
             />
           </div>
 
@@ -68,15 +101,26 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
           <div className="flex space-x-2">
             <button
               type="button"
-              onClick={handleClose}
-              className="flex-1 px-3 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleClose();
+              }}
+              className="flex-1 px-3 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 transition-colors text-sm touch-manipulation"
             >
               取消
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isLoading) {
+                  handleSubmit(e);
+                }
+              }}
+              className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm touch-manipulation"
             >
               {isLoading ? "验证中..." : "确认"}
             </button>
