@@ -37,6 +37,8 @@ function SheetOverlay({
       data-slot="sheet-overlay"
       className={cn(
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        // 微信浏览器遮罩层优化 - 确保点击外部区域关闭
+        "wechat-browser:!fixed wechat-browser:!inset-0 wechat-browser:!z-[9998] wechat-browser:!bg-black/50 wechat-browser:!transition-opacity wechat-browser:!duration-300",
         className
       )}
       {...props}
@@ -58,9 +60,13 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
-          // 微信浏览器特殊处理 - 左侧小半屏
-          "wechat-browser:!fixed wechat-browser:!top-0 wechat-browser:!left-0 wechat-browser:!bottom-0 wechat-browser:!w-[75vw] wechat-browser:!max-w-[300px] wechat-browser:!h-full wechat-browser:!z-[9999]",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition-all duration-300 ease-in-out",
+          // 微信浏览器特殊处理 - 左侧40%屏幕宽度，平滑滑动动画
+          "wechat-browser:!fixed wechat-browser:!top-0 wechat-browser:!left-0 wechat-browser:!bottom-0 wechat-browser:!w-[40vw] wechat-browser:!h-full wechat-browser:!z-[9999] wechat-browser:!transform wechat-browser:!transition-transform wechat-browser:!duration-300 wechat-browser:!ease-in-out",
+          // 微信浏览器打开状态
+          "wechat-browser:data-[state=open]:!translate-x-0",
+          // 微信浏览器关闭状态 - 隐藏在左侧
+          "wechat-browser:data-[state=closed]:!-translate-x-full",
           side === "right" &&
             "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
           side === "left" &&

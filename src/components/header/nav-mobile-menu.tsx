@@ -65,41 +65,6 @@ const MenuItemComponent: React.FC<{ item: MenuItem; depth?: number; onClose?: ()
 
 export function NavMobileMenu() {
   const [open, setOpen] = React.useState(false)
-  const [isWechat, setIsWechat] = React.useState(false)
-
-  React.useEffect(() => {
-    // 检测微信浏览器
-    const checkWechat = () => {
-      const isWechatBrowser = /micromessenger/i.test(navigator.userAgent);
-      setIsWechat(isWechatBrowser);
-      
-      if (isWechatBrowser) {
-        // 微信浏览器中，当菜单打开时防止页面滚动
-        if (open) {
-          document.body.classList.add('sheet-open');
-        } else {
-          document.body.classList.remove('sheet-open');
-        }
-      }
-    };
-    
-    checkWechat();
-    
-    // 监听菜单状态变化
-    if (isWechat) {
-      if (open) {
-        document.body.classList.add('sheet-open');
-      } else {
-        document.body.classList.remove('sheet-open');
-      }
-    }
-    
-    return () => {
-      if (isWechat) {
-        document.body.classList.remove('sheet-open');
-      }
-    };
-  }, [open, isWechat]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -113,7 +78,7 @@ export function NavMobileMenu() {
       </SheetTrigger>
       <SheetContent 
         side="left" 
-        className={`w-[240px] sm:w-[300px] ${isWechat ? 'wechat-browser:!w-full wechat-browser:!h-full wechat-browser:!max-w-none wechat-browser:!max-h-none' : ''}`}
+        className="w-[240px] sm:w-[300px] wechat-browser:!w-[40vw] wechat-browser:!max-w-none"
       >
         <nav className="flex flex-col space-y-4 ml-4 mt-4">
           {menuItems.map((item) => (
