@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useAnalyticsData } from "@/components/AnalyticsDataProvider";
 
 export default function AnalyticsPage() {
@@ -93,12 +94,12 @@ export default function AnalyticsPage() {
               {analytics.blogStats.map((blog, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
                   <td className="py-3 px-4">
-                    <a 
+                    <Link 
                       href={`/blog/${blog.slug}`}
                       className="text-blue-600 hover:text-blue-800"
                     >
                       {blog.title}
-                    </a>
+                    </Link>
                   </td>
                   <td className="text-center py-3 px-4">{blog.views}</td>
                   <td className="text-center py-3 px-4 text-green-600 font-semibold">{blog.todayViews}</td>
