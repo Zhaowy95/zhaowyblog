@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { NavDesktopMenu } from "./nav-desktop-menu";
 import { NavMobileMenu } from "./nav-mobile-menu";
@@ -42,12 +43,13 @@ export function Header() {
         {/* Logo */}
         <Link href="/" title="Home" className="flex items-center gap-4 md:order-first">
           {config.author.avatar && (
-            <img 
+            <Image 
               src={config.author.avatar} 
               alt="Home" 
+              width={40}
+              height={40}
               className="w-10 h-10 rounded-full object-cover"
-              loading="eager"
-              decoding="async"
+              priority
             />
           )}
         </Link>
@@ -64,12 +66,13 @@ export function Header() {
             className="flex items-center"
             title="写博客"
           >
-            <img 
+            <Image 
               src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/writeblog.png`}
               alt="写博客" 
+              width={32}
+              height={32}
               className="w-8 h-8 hover:opacity-80 transition-opacity"
-              loading="eager"
-              decoding="async"
+              priority
             />
           </button>
           

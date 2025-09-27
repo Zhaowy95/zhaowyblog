@@ -2,15 +2,15 @@
 
 import { allBlogs } from "content-collections";
 import Link from "next/link";
+import Image from "next/image";
 import count from 'word-count'
 import { config } from "@/lib/config";
 import { formatDate } from "@/lib/utils";
-import TagList from "@/components/ui/TagList";
 import FeaturedBlogsList from "@/components/FeaturedBlogsList";
 import { useState } from "react";
 
 export default function Home() {
-  const [selectedTag, setSelectedTag] = useState<string | undefined>();
+  const [selectedTag] = useState<string | undefined>();
 
   // 推荐文章列表（仅基于服务端featured状态）
   const featuredBlogs = allBlogs
@@ -32,9 +32,6 @@ export default function Home() {
     : allBlogsSorted;
 
 
-  const handleTagClick = (tag: string) => {
-    setSelectedTag(selectedTag === tag ? undefined : tag);
-  };
 
   const socialLinks = [
     { name: "赞赏", key: "buyMeACoffee" },
@@ -88,15 +85,15 @@ export default function Home() {
               <div key={link.name} className="flex items-center">
                 {link.name === "公众号" ? (
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                    <img src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wechat.png`} alt="公众号" className="w-6 h-6" loading="lazy" decoding="async" />
+                    <Image src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wechat.png`} alt="公众号" width={24} height={24} className="w-6 h-6" />
                   </a>
                 ) : link.name === "GitHub" ? (
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                    <img src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/github.png`} alt="GitHub" className="w-6 h-6" loading="lazy" decoding="async" />
+                    <Image src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/github.png`} alt="GitHub" width={24} height={24} className="w-6 h-6" />
                   </a>
                 ) : link.name === "小红书" ? (
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                    <img src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/redbook.png`} alt="小红书" className="w-6 h-6" loading="lazy" decoding="async" />
+                    <Image src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/redbook.png`} alt="小红书" width={24} height={24} className="w-6 h-6" />
                   </a>
                 ) : (
                   <Link href={link.href} className="underline underline-offset-4">
@@ -173,7 +170,7 @@ export default function Home() {
             href="/blog" 
             className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
-            查看更多 >
+            查看更多 &gt;
           </Link>
         </div>
       </div>

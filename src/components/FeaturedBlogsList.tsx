@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import count from 'word-count';
 import { formatDate } from "@/lib/utils";
 
@@ -38,12 +39,12 @@ export default function FeaturedBlogsList({ initialFeaturedBlogs, selectedTag }:
                     {blog.title}
                   </h2>
                   {/* 推荐文章图标 */}
-                  <img 
+                  <Image 
                     src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/icon_set top.png`}
                     alt="推荐" 
+                    width={24}
+                    height={16}
                     className="w-6 h-4 flex-shrink-0"
-                    loading="lazy"
-                    decoding="async"
                   />
                 </div>
                 <span className="text-sm text-gray-500 flex-shrink-0 ml-2">

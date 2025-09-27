@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { config } from "@/lib/config";
 
 interface AnalyticsData {
   totalVisits: number;
