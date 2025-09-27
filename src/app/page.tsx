@@ -11,20 +11,11 @@ import { useState } from "react";
 export default function Home() {
   const [selectedTag] = useState<string | undefined>();
 
-  // 推荐文章列表（仅基于服务端featured状态）
-  const featuredBlogs = allBlogs
-    .filter((blog: any) => blog.featured === true)
-    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
   const allBlogsSorted = allBlogs.sort((a: any, b: any) => {
     if (a.featured && !b.featured) return -1;
     if (!a.featured && b.featured) return 1;
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
-
-
-  // 获取推荐文章的slug列表，用于去重
-  const featuredSlugs = featuredBlogs.map((blog: any) => blog.slug);
   
   const filteredBlogs = selectedTag 
     ? allBlogsSorted.filter((blog: any) => 

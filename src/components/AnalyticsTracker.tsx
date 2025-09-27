@@ -64,7 +64,7 @@ export default function AnalyticsTracker({
             // 这里可以发送一个更新请求，但为了简化，我们使用设备指纹
           }
         })
-        .catch(error => {
+        .catch(() => {
           console.log('IP service unavailable, using fingerprint');
         });
 
@@ -155,31 +155,6 @@ export default function AnalyticsTracker({
       }
     };
 
-    // 备用请求函数
-    const tryAlternativeRequest = async (data: any) => {
-      try {
-        // 尝试使用不同的请求头格式
-        const response = await fetch('https://tnnnez71.lc-cn-n1-shared.com/1.1/classes/Analytics', {
-          method: 'POST',
-          headers: {
-            'X-LC-Id': 'tNNnez7lGPAvJR1m7SJmdgWr-gzGzoHsz',
-            'X-LC-Key': 'qQyqSoZuGOaEIj7Urq6U0A0B',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(data)
-        });
-        
-        if (response.ok) {
-          console.log('Alternative request successful');
-        } else {
-          const errorText = await response.text();
-          console.error('Alternative request failed:', response.status, errorText);
-        }
-      } catch (error) {
-        console.error('Alternative request error:', error);
-      }
-    };
 
     // 辅助函数
     const getDeviceType = (userAgent: string): 'mobile' | 'desktop' | 'tablet' => {

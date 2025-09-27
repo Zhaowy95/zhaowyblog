@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 // Valine类型声明
 declare global {
@@ -17,7 +17,7 @@ interface ValineCommentsProps {
 export default function ValineComments({ articleId, title }: ValineCommentsProps) {
   const initializedRef = useRef(false);
 
-  const initializeValine = () => {
+  const initializeValine = useCallback(() => {
     if (initializedRef.current) {
       console.log('Valine already initialized for this component');
       return;
@@ -47,7 +47,7 @@ export default function ValineComments({ articleId, title }: ValineCommentsProps
         console.error('Valine初始化失败:', error);
       }
     }
-  };
+  }, [articleId, title]);
 
   useEffect(() => {
     // 防止重复初始化
@@ -99,7 +99,7 @@ export default function ValineComments({ articleId, title }: ValineCommentsProps
         vcomments.innerHTML = '';
       }
     };
-  }, [articleId, title]);
+  }, [articleId, title, initializeValine]);
 
   return (
     <div className="mt-12 pt-8 border-t border-gray-200">
