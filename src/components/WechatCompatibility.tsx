@@ -54,7 +54,8 @@ export default function WechatCompatibility() {
         setViewport();
         // 强制重新计算布局
         document.body.style.display = 'none';
-        document.body.offsetHeight; // 触发重排
+        // 触发重排
+        void document.body.offsetHeight;
         document.body.style.display = '';
       };
       
