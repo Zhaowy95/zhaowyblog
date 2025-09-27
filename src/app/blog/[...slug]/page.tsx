@@ -95,16 +95,21 @@ export async function generateMetadata({ params }: BlogsPageProps): Promise<Meta
   }
 }
 
-export async function generateStaticParams(): Promise<string[]> {
-  // 如果没有博客文章，返回空数组
-  if (!allBlogs || allBlogs.length === 0) {
+export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
+  try {
+    // 如果没有博客文章，返回空数组
+    if (!allBlogs || allBlogs.length === 0) {
+      return []
+    }
+    
+    // @ts-ignore
+    return allBlogs.map((blog: any) => ({
+      slug: blog.slug.split('/'),
+    }))
+  } catch (error) {
+    console.error('Error in generateStaticParams:', error)
     return []
   }
-  
-  // @ts-ignore
-  return allBlogs.map((blog: any) => ({
-    slug: blog.slug.split('/'),
-  }))
 }
 
 export default async function BlogPage(props: BlogsPageProps) {
