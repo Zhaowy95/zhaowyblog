@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { NavDesktopMenu } from "./nav-desktop-menu";
 import { NavMobileMenu } from "./nav-mobile-menu";
 import { motion } from "framer-motion";
@@ -13,7 +13,11 @@ import PasswordModal from "@/components/auth/PasswordModal";
 
 export function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  
+  // 检测是否为需要调整宽度的页面
+  const isWidePage = pathname.includes("/blog/") || pathname.includes("/write");
 
   const handleWriteBlogClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -29,9 +33,11 @@ export function Header() {
     <header className="pt-4">
       <motion.div
         initial={{ maxWidth: "48rem" }}
-        animate={{ maxWidth: "48rem" }}
+        animate={{ maxWidth: isWidePage ? "72rem" : "48rem" }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="container mx-auto flex h-16 items-center justify-between md:px-4 max-w-3xl"
+        className={`container mx-auto flex h-16 items-center justify-between md:px-4 ${
+          isWidePage ? "max-w-6xl" : "max-w-3xl"
+        }`}
       >
         {/* Mobile navigation */}
         <NavMobileMenu />
