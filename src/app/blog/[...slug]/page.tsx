@@ -99,8 +99,11 @@ export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   try {
     // 如果没有博客文章，返回空数组
     if (!allBlogs || allBlogs.length === 0) {
+      console.log('No blogs found, returning empty array for static params')
       return []
     }
+    
+    console.log(`Found ${allBlogs.length} blogs for static generation`)
     
     // @ts-ignore
     return allBlogs.map((blog: any) => ({
@@ -108,6 +111,7 @@ export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
     }))
   } catch (error) {
     console.error('Error in generateStaticParams:', error)
+    // 返回空数组而不是抛出错误，这样构建可以继续
     return []
   }
 }
