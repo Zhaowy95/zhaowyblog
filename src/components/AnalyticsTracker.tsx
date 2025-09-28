@@ -47,10 +47,14 @@ export default function AnalyticsTracker({
       // 暂时禁用LeanCloud API调用，避免400错误
       console.log('Analytics tracking temporarily disabled to avoid 400 errors');
       
-      // 获取用户真实IP地址
+      // 获取用户IP地址 - 优先使用真实IP，失败时使用稳定的设备指纹
       let userIP = 'unknown';
       
-      // 获取真实IP地址
+      // 生成稳定的设备指纹（作为备选方案）
+      const fingerprint = `${navigator.userAgent.slice(0, 50)}-${screen.width}x${screen.height}-${navigator.language}`;
+      const stableFingerprint = `fp-${btoa(fingerprint).slice(0, 16)}`;
+      
+      // 尝试获取真实IP地址
       try {
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
@@ -58,14 +62,14 @@ export default function AnalyticsTracker({
           userIP = data.ip;
           console.log('Real IP obtained:', userIP);
         } else {
-          // 如果获取失败，使用随机IP
-          userIP = `random-${Math.random().toString(36).substr(2, 9)}`;
-          console.log('Using random IP:', userIP);
+          // 如果获取失败，使用稳定的设备指纹
+          userIP = stableFingerprint;
+          console.log('Using stable fingerprint:', userIP);
         }
       } catch (error) {
-        // 如果获取失败，使用随机IP
-        userIP = `random-${Math.random().toString(36).substr(2, 9)}`;
-        console.log('IP service failed, using random IP:', userIP, error);
+        // 如果获取失败，使用稳定的设备指纹
+        userIP = stableFingerprint;
+        console.log('IP service failed, using stable fingerprint:', userIP, error);
       }
 
       // 使用LeanCloud JavaScript SDK进行数据存储
