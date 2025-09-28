@@ -194,21 +194,21 @@ export default function AnalyticsTracker({
         return 'Other Mobile';
       }
       
-      // PC端浏览器检测
-      if (userAgent.includes('Chrome') && !userAgent.includes('Edge')) return 'Chrome';
+      // PC端浏览器检测 - 注意检测顺序很重要
+      if (userAgent.includes('Edge')) return 'Edge'; // Edge必须放在Chrome之前检测
+      if (userAgent.includes('Chrome')) return 'Chrome';
       if (userAgent.includes('Firefox')) return 'Firefox';
       if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
-      if (userAgent.includes('Edge')) return 'Edge';
       if (userAgent.includes('Opera')) return 'Opera';
       if (userAgent.includes('Internet Explorer') || userAgent.includes('MSIE')) return 'Internet Explorer';
       return 'Other Desktop';
     };
 
     const getBrowserInfo = (userAgent: string) => {
+      if (userAgent.includes('Edge')) return 'Edge'; // Edge必须放在Chrome之前检测
       if (userAgent.includes('Chrome')) return 'Chrome';
       if (userAgent.includes('Firefox')) return 'Firefox';
       if (userAgent.includes('Safari')) return 'Safari';
-      if (userAgent.includes('Edge')) return 'Edge';
       return 'Other';
     };
 
