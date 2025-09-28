@@ -120,6 +120,7 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
         // 获取所有分析数据
         const Analytics = window.AV.Object.extend('Analytics');
         const query = new window.AV.Query(Analytics);
+        query.limit(1000); // 设置更大的查询限制
         query.descending('createdAt');
 
         query.find().then((records: any[]) => {
