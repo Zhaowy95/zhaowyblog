@@ -119,7 +119,7 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
 
         // 获取所有分析数据 - 使用分页查询获取所有数据
         const Analytics = window.AV.Object.extend('Analytics');
-        const allRecords = [];
+        const allRecords: any[] = [];
         let skip = 0;
         const limit = 100; // LeanCloud最大限制
         
