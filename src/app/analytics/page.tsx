@@ -21,15 +21,15 @@ export default function AnalyticsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
 
-      {/* 总体统计 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">总访问量</h3>
-          <p className="text-3xl font-bold text-blue-600">{analytics.totalVisits.toLocaleString()}</p>
+      {/* 总体统计 - 移动端优化：一行展示 */}
+      <div className="grid grid-cols-2 gap-3 mb-8">
+        <div className="bg-white rounded-lg shadow p-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-1">总访问量</h3>
+          <p className="text-xl font-bold text-blue-600">{analytics.totalVisits.toLocaleString()}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">独立访客</h3>
-          <p className="text-3xl font-bold text-green-600">{analytics.uniqueVisitors.toLocaleString()}</p>
+        <div className="bg-white rounded-lg shadow p-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-1">独立访客</h3>
+          <p className="text-xl font-bold text-green-600">{analytics.uniqueVisitors.toLocaleString()}</p>
         </div>
       </div>
 
