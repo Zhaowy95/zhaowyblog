@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useAnalyticsData } from "@/components/AnalyticsDataProvider";
+import { useState } from "react";
 
 export default function AnalyticsPage() {
   const { analytics, isLoading } = useAnalyticsData();
+  const [activeTab, setActiveTab] = useState<'visits' | 'unique'>('visits');
 
   if (isLoading) {
     return (
@@ -60,19 +62,123 @@ export default function AnalyticsPage() {
       {/* 设备统计 */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <h3 className="text-xl font-semibold mb-4">访问设备分布</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        {/* Tab选择 */}
+        <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
+          <button
+            onClick={() => setActiveTab('visits')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'visits'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            访问量
+          </button>
+          <button
+            onClick={() => setActiveTab('unique')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'unique'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            独立访问
+          </button>
+        </div>
+
+        {/* 基础设备统计 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{analytics.deviceStats.mobile}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {activeTab === 'visits' ? analytics.deviceStats.mobile : 
+               Object.values(analytics.detailedBrowserStats.mobile).reduce((sum, browser) => sum + browser.uniqueVisitors, 0)}
+            </div>
             <div className="text-gray-600">移动端</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{analytics.deviceStats.desktop}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {activeTab === 'visits' ? analytics.deviceStats.desktop : 
+               Object.values(analytics.detailedBrowserStats.desktop).reduce((sum, browser) => sum + browser.uniqueVisitors, 0)}
+            </div>
             <div className="text-gray-600">桌面端</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">{analytics.deviceStats.tablet}</div>
+            <div className="text-2xl font-bold text-orange-600">
+              {activeTab === 'visits' ? analytics.deviceStats.tablet : 
+               Object.values(analytics.detailedBrowserStats.tablet).reduce((sum, browser) => sum + browser.uniqueVisitors, 0)}
+            </div>
             <div className="text-gray-600">平板端</div>
           </div>
+        </div>
+
+        {/* 详细浏览器统计 */}
+        <div className="space-y-6">
+          {/* 桌面端浏览器 */}
+          {Object.keys(analytics.detailedBrowserStats.desktop).length > 0 && (
+            <div>
+              <h4 className="text-lg font-semibold mb-3 text-green-600">桌面端浏览器</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {Object.entries(analytics.detailedBrowserStats.desktop)
+                  .sort(([,a], [,b]) => (activeTab === 'visits' ? b.visits : b.uniqueVisitors) - (activeTab === 'visits' ? a.visits : a.uniqueVisitors))
+                  .map(([browser, stats]) => (
+                    <div key={browser} className="bg-gray-50 rounded-lg p-4">
+                      <div className="text-sm font-medium text-gray-700 mb-1">{browser}</div>
+                      <div className="text-xl font-bold text-green-600">
+                        {activeTab === 'visits' ? stats.visits : stats.uniqueVisitors}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {activeTab === 'visits' ? '访问量' : '独立访问'}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* 移动端浏览器 */}
+          {Object.keys(analytics.detailedBrowserStats.mobile).length > 0 && (
+            <div>
+              <h4 className="text-lg font-semibold mb-3 text-blue-600">移动端浏览器</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {Object.entries(analytics.detailedBrowserStats.mobile)
+                  .sort(([,a], [,b]) => (activeTab === 'visits' ? b.visits : b.uniqueVisitors) - (activeTab === 'visits' ? a.visits : a.uniqueVisitors))
+                  .map(([browser, stats]) => (
+                    <div key={browser} className="bg-gray-50 rounded-lg p-4">
+                      <div className="text-sm font-medium text-gray-700 mb-1">{browser}</div>
+                      <div className="text-xl font-bold text-blue-600">
+                        {activeTab === 'visits' ? stats.visits : stats.uniqueVisitors}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {activeTab === 'visits' ? '访问量' : '独立访问'}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* 平板端浏览器 */}
+          {Object.keys(analytics.detailedBrowserStats.tablet).length > 0 && (
+            <div>
+              <h4 className="text-lg font-semibold mb-3 text-orange-600">平板端浏览器</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {Object.entries(analytics.detailedBrowserStats.tablet)
+                  .sort(([,a], [,b]) => (activeTab === 'visits' ? b.visits : b.uniqueVisitors) - (activeTab === 'visits' ? a.visits : a.uniqueVisitors))
+                  .map(([browser, stats]) => (
+                    <div key={browser} className="bg-gray-50 rounded-lg p-4">
+                      <div className="text-sm font-medium text-gray-700 mb-1">{browser}</div>
+                      <div className="text-xl font-bold text-orange-600">
+                        {activeTab === 'visits' ? stats.visits : stats.uniqueVisitors}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {activeTab === 'visits' ? '访问量' : '独立访问'}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

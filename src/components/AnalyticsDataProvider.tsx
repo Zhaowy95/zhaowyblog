@@ -20,6 +20,11 @@ interface AnalyticsData {
     desktop: number;
     tablet: number;
   };
+  detailedBrowserStats: {
+    desktop: { [browser: string]: { visits: number; uniqueVisitors: number } };
+    mobile: { [browser: string]: { visits: number; uniqueVisitors: number } };
+    tablet: { [browser: string]: { visits: number; uniqueVisitors: number } };
+  };
   blogStats: Array<{
     title: string;
     slug: string;
@@ -82,6 +87,11 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
       other: { visits: 0, uniqueVisitors: 0 },
     },
     deviceStats: { mobile: 0, desktop: 0, tablet: 0 },
+    detailedBrowserStats: {
+      desktop: {},
+      mobile: {},
+      tablet: {}
+    },
     blogStats: [],
     dailyStats: [],
   });
@@ -212,11 +222,39 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
 
           // 计算设备统计
           const deviceStats = { mobile: 0, desktop: 0, tablet: 0 };
+          const detailedBrowserStats = {
+            desktop: {} as { [browser: string]: { visits: number; uniqueVisitors: number } },
+            mobile: {} as { [browser: string]: { visits: number; uniqueVisitors: number } },
+            tablet: {} as { [browser: string]: { visits: number; uniqueVisitors: number } }
+          };
+          
           records.forEach((record: any) => {
-            const device = record.get('device') || 'desktop';
+            const device = record.get('deviceType') || 'desktop';
+            const browser = record.get('detailedBrowser') || 'Unknown';
+            
             if (device === 'mobile') deviceStats.mobile++;
             else if (device === 'tablet') deviceStats.tablet++;
             else deviceStats.desktop++;
+            
+            // 详细浏览器统计
+            if (!detailedBrowserStats[device as keyof typeof detailedBrowserStats][browser]) {
+              detailedBrowserStats[device as keyof typeof detailedBrowserStats][browser] = { visits: 0, uniqueVisitors: 0 };
+            }
+            detailedBrowserStats[device as keyof typeof detailedBrowserStats][browser].visits++;
+          });
+
+          // 计算详细浏览器独立访客
+          Object.keys(detailedBrowserStats).forEach(deviceType => {
+            const deviceTypeKey = deviceType as keyof typeof detailedBrowserStats;
+            Object.keys(detailedBrowserStats[deviceTypeKey]).forEach(browser => {
+              const browserIPs = new Set(
+                records
+                  .filter((r: any) => r.get('deviceType') === deviceType && r.get('detailedBrowser') === browser)
+                  .map((r: any) => r.get('ip'))
+                  .filter(Boolean)
+              );
+              detailedBrowserStats[deviceTypeKey][browser].uniqueVisitors = browserIPs.size;
+            });
           });
 
           // 计算文章统计
@@ -306,6 +344,7 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
             todayVisits,
             pageStats,
             deviceStats,
+            detailedBrowserStats,
             blogStats,
             dailyStats,
           });

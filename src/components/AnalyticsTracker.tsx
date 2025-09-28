@@ -82,6 +82,7 @@ export default function AnalyticsTracker({
         timestamp: Date.now().toString(),
         deviceType: getDeviceType(navigator.userAgent),
         browser: getBrowserInfo(navigator.userAgent),
+        detailedBrowser: getDetailedBrowserInfo(navigator.userAgent),
         os: getOSInfo(navigator.userAgent),
         ip: userIP,
         blogSlug: blogSlug || null,
@@ -143,6 +144,7 @@ export default function AnalyticsTracker({
         analytics.set('timestamp', data.timestamp);
         analytics.set('deviceType', data.deviceType);
         analytics.set('browser', data.browser);
+        analytics.set('detailedBrowser', data.detailedBrowser);
         analytics.set('os', data.os);
         analytics.set('ip', data.ip);
         if (data.blogSlug) analytics.set('blogSlug', data.blogSlug);
@@ -172,6 +174,34 @@ export default function AnalyticsTracker({
       if (tabletRegex.test(userAgent)) return 'tablet';
       if (mobileRegex.test(userAgent) || isSmallScreen) return 'mobile';
       return 'desktop';
+    };
+
+    const getDetailedBrowserInfo = (userAgent: string) => {
+      const isMobile = getDeviceType(userAgent) === 'mobile';
+      const isTablet = getDeviceType(userAgent) === 'tablet';
+      
+      // 移动端浏览器检测
+      if (isMobile || isTablet) {
+        if (userAgent.includes('MicroMessenger')) return 'WeChat';
+        if (userAgent.includes('QQ/')) return 'QQ Browser';
+        if (userAgent.includes('UCBrowser')) return 'UC Browser';
+        if (userAgent.includes('SamsungBrowser')) return 'Samsung Browser';
+        if (userAgent.includes('Chrome') && userAgent.includes('Mobile')) return 'Chrome Mobile';
+        if (userAgent.includes('Safari') && userAgent.includes('Mobile')) return 'Safari Mobile';
+        if (userAgent.includes('Firefox') && userAgent.includes('Mobile')) return 'Firefox Mobile';
+        if (userAgent.includes('Edge') && userAgent.includes('Mobile')) return 'Edge Mobile';
+        if (userAgent.includes('Opera') && userAgent.includes('Mobile')) return 'Opera Mobile';
+        return 'Other Mobile';
+      }
+      
+      // PC端浏览器检测
+      if (userAgent.includes('Chrome') && !userAgent.includes('Edge')) return 'Chrome';
+      if (userAgent.includes('Firefox')) return 'Firefox';
+      if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
+      if (userAgent.includes('Edge')) return 'Edge';
+      if (userAgent.includes('Opera')) return 'Opera';
+      if (userAgent.includes('Internet Explorer') || userAgent.includes('MSIE')) return 'Internet Explorer';
+      return 'Other Desktop';
     };
 
     const getBrowserInfo = (userAgent: string) => {
