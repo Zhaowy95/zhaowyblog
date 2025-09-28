@@ -65,7 +65,7 @@ export default function AnalyticsTracker({
       } catch (error) {
         // 如果获取失败，使用随机IP
         userIP = `random-${Math.random().toString(36).substr(2, 9)}`;
-        console.log('IP service failed, using random IP:', userIP);
+        console.log('IP service failed, using random IP:', userIP, error);
       }
 
       // 使用LeanCloud JavaScript SDK进行数据存储
