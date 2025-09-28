@@ -58,6 +58,11 @@ const AnalyticsContext = createContext<{
       other: { visits: 0, uniqueVisitors: 0 },
     },
     deviceStats: { mobile: 0, desktop: 0, tablet: 0 },
+    detailedBrowserStats: {
+      desktop: {},
+      mobile: {},
+      tablet: {}
+    },
     blogStats: [],
     dailyStats: [],
   },
