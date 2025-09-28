@@ -47,26 +47,26 @@ export default function AnalyticsTracker({
       // 暂时禁用LeanCloud API调用，避免400错误
       console.log('Analytics tracking temporarily disabled to avoid 400 errors');
       
-      // 获取用户IP地址 - 多个备用方案
+      // 获取用户真实IP地址
       let userIP = 'unknown';
       
-      // 生成稳定的设备指纹（不包含时间戳）
-      const fingerprint = `${navigator.userAgent.slice(0, 50)}-${screen.width}x${screen.height}-${navigator.language}`;
-      userIP = `fp-${btoa(fingerprint).slice(0, 16)}`;
-      console.log('Using device fingerprint for IP:', userIP);
-      
-      // 可选：尝试获取真实IP（但不阻塞）
-      fetch('https://api.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => {
-          if (data.ip) {
-            console.log('Real IP obtained:', data.ip);
-            // 这里可以发送一个更新请求，但为了简化，我们使用设备指纹
-          }
-        })
-        .catch(() => {
-          console.log('IP service unavailable, using fingerprint');
-        });
+      // 获取真实IP地址
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        if (data.ip) {
+          userIP = data.ip;
+          console.log('Real IP obtained:', userIP);
+        } else {
+          // 如果获取失败，使用随机IP
+          userIP = `random-${Math.random().toString(36).substr(2, 9)}`;
+          console.log('Using random IP:', userIP);
+        }
+      } catch (error) {
+        // 如果获取失败，使用随机IP
+        userIP = `random-${Math.random().toString(36).substr(2, 9)}`;
+        console.log('IP service failed, using random IP:', userIP);
+      }
 
       // 使用LeanCloud JavaScript SDK进行数据存储
       const analyticsData = {

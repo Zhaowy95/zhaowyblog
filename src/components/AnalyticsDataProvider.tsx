@@ -117,13 +117,32 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
           serverURL: LEANCLOUD_SERVER_URL
         });
 
-        // 获取所有分析数据
+        // 获取所有分析数据 - 使用分页查询获取所有数据
         const Analytics = window.AV.Object.extend('Analytics');
-        const query = new window.AV.Query(Analytics);
-        query.limit(1000000000); // 设置100亿条数据限制
-        query.descending('createdAt');
+        const allRecords = [];
+        let skip = 0;
+        const limit = 100; // LeanCloud最大限制
+        
+        const fetchAllRecords = async () => {
+          while (true) {
+            const query = new window.AV.Query(Analytics);
+            query.limit(limit);
+            query.skip(skip);
+            query.descending('createdAt');
+            
+            const batch = await query.find();
+            if (batch.length === 0) break;
+            
+            allRecords.push(...batch);
+            skip += limit;
+            
+            // 防止无限循环
+            if (skip > 10000) break;
+          }
+          return allRecords;
+        };
 
-        query.find().then((records: any[]) => {
+        fetchAllRecords().then((records: any[]) => {
           console.log('Analytics records:', records.length);
           
           if (records.length === 0) {
