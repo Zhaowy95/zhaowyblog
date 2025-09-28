@@ -268,8 +268,14 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
             
             const dayIPs = new Set(dayRecords.map((r: any) => r.get('ip')).filter(Boolean));
             
+            // 使用本地时间格式化，避免UTC时区转换问题
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateString = `${year}-${month}-${day}`;
+            
             dailyStats.push({
-              date: date.toISOString().split('T')[0],
+              date: dateString,
               visits: dayRecords.length,
               uniqueVisitors: dayIPs.size
             });

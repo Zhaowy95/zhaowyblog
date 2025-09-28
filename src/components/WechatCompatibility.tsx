@@ -26,13 +26,14 @@ export default function WechatCompatibility() {
         width: 100% !important;
       }
       
-      /* 微信浏览器Sheet组件特殊处理 - 左侧40%宽度，支持滑动动画 */
+      /* 微信浏览器Sheet组件特殊处理 - 左侧50%-60%宽度，支持滑动动画 */
       .wechat-browser [data-slot="sheet-content"] {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         bottom: 0 !important;
-        width: 40vw !important;
+        width: min(60vw, 400px) !important;
+        min-width: 50vw !important;
         height: 100vh !important;
         z-index: 9999 !important;
         transform: translateX(-100%) !important;

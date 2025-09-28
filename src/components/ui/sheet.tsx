@@ -61,8 +61,8 @@ function SheetContent({
         data-slot="sheet-content"
         className={cn(
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition-all duration-300 ease-in-out",
-          // 微信浏览器特殊处理 - 左侧40%屏幕宽度，平滑滑动动画
-          "wechat-browser:!fixed wechat-browser:!top-0 wechat-browser:!left-0 wechat-browser:!bottom-0 wechat-browser:!w-[40vw] wechat-browser:!h-full wechat-browser:!z-[9999] wechat-browser:!transform wechat-browser:!transition-transform wechat-browser:!duration-300 wechat-browser:!ease-in-out",
+          // 微信浏览器特殊处理 - 左侧50%-60%屏幕宽度，平滑滑动动画
+          "wechat-browser:!fixed wechat-browser:!top-0 wechat-browser:!left-0 wechat-browser:!bottom-0 wechat-browser:!w-[min(60vw,400px)] wechat-browser:!min-w-[50vw] wechat-browser:!h-full wechat-browser:!z-[9999] wechat-browser:!transform wechat-browser:!transition-transform wechat-browser:!duration-300 wechat-browser:!ease-in-out",
           // 微信浏览器打开状态
           "wechat-browser:data-[state=open]:!translate-x-0",
           // 微信浏览器关闭状态 - 隐藏在左侧

@@ -78,7 +78,7 @@ export function NavMobileMenu() {
       </SheetTrigger>
       <SheetContent 
         side="left" 
-        className="w-[240px] sm:w-[300px] wechat-browser:!w-[40vw] wechat-browser:!max-w-none"
+        className="w-[240px] sm:w-[300px] wechat-browser:!w-[min(60vw,400px)] wechat-browser:!min-w-[50vw] wechat-browser:!max-w-none"
       >
         <nav className="flex flex-col space-y-4 ml-4 mt-4">
           {menuItems.map((item) => (
