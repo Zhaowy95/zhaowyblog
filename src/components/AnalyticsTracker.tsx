@@ -195,7 +195,7 @@ export default function AnalyticsTracker({
       }
       
       // PC端浏览器检测 - 注意检测顺序很重要
-      if (userAgent.includes('Edge')) return 'Edge'; // Edge必须放在Chrome之前检测
+      if (userAgent.includes('Edg/')) return 'Edge'; // Edge浏览器检测Edg/标识，必须放在Chrome之前
       if (userAgent.includes('Chrome')) return 'Chrome';
       if (userAgent.includes('Firefox')) return 'Firefox';
       if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
@@ -205,7 +205,7 @@ export default function AnalyticsTracker({
     };
 
     const getBrowserInfo = (userAgent: string) => {
-      if (userAgent.includes('Edge')) return 'Edge'; // Edge必须放在Chrome之前检测
+      if (userAgent.includes('Edg/')) return 'Edge'; // Edge浏览器检测Edg/标识，必须放在Chrome之前
       if (userAgent.includes('Chrome')) return 'Chrome';
       if (userAgent.includes('Firefox')) return 'Firefox';
       if (userAgent.includes('Safari')) return 'Safari';
