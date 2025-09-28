@@ -162,11 +162,15 @@ export default function AnalyticsTracker({
 
     // 辅助函数
     const getDeviceType = (userAgent: string): 'mobile' | 'desktop' | 'tablet' => {
-      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+      // 检测移动设备 - 包含微信浏览器、各种移动设备标识
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|MicroMessenger|Mobile|mobile|Android.*Mobile|iPhone|iPod|BlackBerry|Windows Phone/i;
       const tabletRegex = /iPad|Android(?=.*\bMobile\b)/i;
       
+      // 检测屏幕尺寸（作为辅助判断）
+      const isSmallScreen = window.screen && (window.screen.width <= 768 || window.screen.height <= 768);
+      
       if (tabletRegex.test(userAgent)) return 'tablet';
-      if (mobileRegex.test(userAgent)) return 'mobile';
+      if (mobileRegex.test(userAgent) || isSmallScreen) return 'mobile';
       return 'desktop';
     };
 
