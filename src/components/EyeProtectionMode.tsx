@@ -10,6 +10,25 @@ export default function EyeProtectionMode() {
     setIsEnabled(true);
     document.body.classList.add("eye-protection-mode");
     localStorage.setItem("eye-protection-mode", "true");
+
+    // 微信浏览器特殊处理
+    const isWechatBrowser = /MicroMessenger/i.test(navigator.userAgent);
+    if (isWechatBrowser) {
+      // 强制设置视口高度
+      const setViewportHeight = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      
+      setViewportHeight();
+      window.addEventListener('resize', setViewportHeight);
+      window.addEventListener('orientationchange', setViewportHeight);
+      
+      return () => {
+        window.removeEventListener('resize', setViewportHeight);
+        window.removeEventListener('orientationchange', setViewportHeight);
+      };
+    }
   }, []);
 
   const toggleEyeProtection = () => {
@@ -35,13 +54,16 @@ export default function EyeProtectionMode() {
       }`}
       style={{
         position: 'fixed',
-        bottom: '1rem',
+        bottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
         right: '1rem',
         zIndex: 9999,
         // 确保在移动端固定在视图右下角
         transform: 'none',
         // 防止按钮被其他元素遮挡
-        pointerEvents: 'auto'
+        pointerEvents: 'auto',
+        // 确保按钮始终可见
+        minHeight: '48px',
+        minWidth: '48px'
       }}
       title={isEnabled ? "关闭护眼模式" : "开启护眼模式"}
     >

@@ -155,3 +155,26 @@
 .eye-protection-mode .hover\:bg-gray-300:hover {
   background-color: #d4c4a8 !important;
 }
+
+/* 微信浏览器视口高度修复 */
+:root {
+  --vh: 1vh;
+}
+
+/* 微信浏览器特殊处理 */
+@supports (-webkit-touch-callout: none) {
+  :root {
+    --vh: 1vh;
+  }
+  
+  /* 微信浏览器视口高度修复 */
+  .wechat-browser {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  .wechat-browser body {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+}
