@@ -32,10 +32,9 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
   }, [isOpen]);
 
   // 处理背景点击关闭
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+  const handleBackdropClick = () => {
+    // 点击任何区域都关闭弹窗，除了图片本身
+    onClose();
   };
 
   // 处理ESC键关闭
