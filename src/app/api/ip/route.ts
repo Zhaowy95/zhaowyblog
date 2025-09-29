@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   try {
     const ip = parseClientIp(new Headers(request.headers)) || null;
     return NextResponse.json({ ip }, { status: 200, headers: { 'cache-control': 'no-store' } });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ ip: null }, { status: 200 });
   }
 }
