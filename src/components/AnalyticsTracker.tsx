@@ -56,15 +56,6 @@ export default function AnalyticsTracker({
           new Promise<Response>((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
         ]);
 
-      const getLocalIp = async () => {
-        try {
-          const res = await withTimeout(fetch('/api/ip', { cache: 'no-store' }));
-          const data = await res.json();
-          if (data?.ip) return data.ip as string;
-        } catch {}
-        return null;
-      };
-
       const getThirdPartyIp = async () => {
         const endpoints = [
           'https://api.ipify.org?format=json',
@@ -73,7 +64,7 @@ export default function AnalyticsTracker({
         ];
         for (const ep of endpoints) {
           try {
-            const res = await withTimeout(fetch(ep, { cache: 'no-store' }), 2500);
+            const res = await withTimeout(fetch(ep, { cache: 'no-store', mode: 'cors' }), 2500);
             const data = await res.json();
             const ip = data.ip || data.query || data.ip_addr || null;
             if (ip) return ip as string;
@@ -82,13 +73,8 @@ export default function AnalyticsTracker({
         return null;
       };
 
-      const local = await getLocalIp();
-      if (local) {
-        userIP = local;
-      } else {
-        const third = await getThirdPartyIp();
-        userIP = third || longFingerprint;
-      }
+      const third = await getThirdPartyIp();
+      userIP = third || longFingerprint;
 
       // 使用LeanCloud JavaScript SDK进行数据存储
       const analyticsData = {

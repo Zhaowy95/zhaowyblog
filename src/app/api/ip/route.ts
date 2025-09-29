@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 
-export const runtime = 'edge';
-
 function parseClientIp(headers: Headers): string | null {
   const xff = headers.get('x-forwarded-for');
   if (xff) {
@@ -17,12 +15,13 @@ function parseClientIp(headers: Headers): string | null {
   return null;
 }
 
-export async function GET(request: Request) {
+// 注意：项目使用静态导出（output: export），API 路由在构建期会被访问收集数据。
+// 由于静态导出不支持在构建时对动态 API 进行采集，这里直接返回 404，避免构建失败。
+export const dynamic = 'force-static';
+
+export async function GET() {
   try {
-    const ip = parseClientIp(new Headers(request.headers)) || null;
-    return NextResponse.json({ ip }, { status: 200, headers: { 'cache-control': 'no-store' } });
-  } catch {
-    return NextResponse.json({ ip: null }, { status: 200 });
+    return NextResponse.json({ ip: null }, { status: 404 });
   }
 }
 
