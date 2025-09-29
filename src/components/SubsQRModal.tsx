@@ -12,7 +12,6 @@ interface SubsQRModalProps {
 export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModalProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {

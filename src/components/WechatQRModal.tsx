@@ -12,7 +12,6 @@ interface WechatQRModalProps {
 export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRModalProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
