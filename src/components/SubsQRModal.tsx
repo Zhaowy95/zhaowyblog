@@ -37,6 +37,12 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
     onClose();
   };
 
+  // 处理触摸事件（微信浏览器优化）
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    onClose();
+  };
+
   // 处理ESC键关闭
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -45,12 +51,24 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
       }
     };
 
+    // 微信浏览器全局点击监听器
+    const handleGlobalClick = () => {
+      if (isOpen) {
+        onClose();
+      }
+    };
+
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
+      // 延迟添加全局点击监听器，避免立即触发
+      setTimeout(() => {
+        document.addEventListener('click', handleGlobalClick, true);
+      }, 100);
     }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('click', handleGlobalClick, true);
     };
   }, [isOpen, onClose]);
 
@@ -62,6 +80,8 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
       onClick={handleBackdropClick}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleBackdropClick}
     >
       {/* 弹窗内容 - 透明背景 */}
       <div 
