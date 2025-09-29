@@ -44,32 +44,50 @@ export default function AnalyticsTracker({
     };
 
     const sendAnalytics = async () => {
-      // 暂时禁用LeanCloud API调用，避免400错误
-      console.log('Analytics tracking temporarily disabled to avoid 400 errors');
-      
-      // 获取用户IP地址 - 优先使用真实IP，失败时使用稳定的设备指纹
+      // 获取用户IP地址 - 优先使用本地API，其次并行第三方；最终兜底为长指纹
       let userIP = 'unknown';
-      
-      // 生成稳定的设备指纹（作为备选方案）
-      const fingerprint = `${navigator.userAgent.slice(0, 50)}-${screen.width}x${screen.height}-${navigator.language}`;
-      const stableFingerprint = `fp-${btoa(fingerprint).slice(0, 16)}`;
-      
-      // 尝试获取真实IP地址
-      try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        if (data.ip) {
-          userIP = data.ip;
-          console.log('Real IP obtained:', userIP);
-        } else {
-          // 如果获取失败，使用稳定的设备指纹
-          userIP = stableFingerprint;
-          console.log('Using stable fingerprint:', userIP);
+
+      const longFingerprintRaw = `${navigator.userAgent}|${screen.width}x${screen.height}|${navigator.language}|${Intl.DateTimeFormat().resolvedOptions().timeZone}|${Math.round(performance.timeOrigin || Date.now())}`;
+      const longFingerprint = `fp-${btoa(unescape(encodeURIComponent(longFingerprintRaw))).slice(0,64)}`;
+
+      const withTimeout = (p: Promise<Response>, ms = 2500) =>
+        Promise.race([
+          p,
+          new Promise<Response>((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
+        ]);
+
+      const getLocalIp = async () => {
+        try {
+          const res = await withTimeout(fetch('/api/ip', { cache: 'no-store' }));
+          const data = await res.json();
+          if (data?.ip) return data.ip as string;
+        } catch {}
+        return null;
+      };
+
+      const getThirdPartyIp = async () => {
+        const endpoints = [
+          'https://api.ipify.org?format=json',
+          'https://ip.seeip.org/jsonip',
+          'https://ifconfig.co/json'
+        ];
+        for (const ep of endpoints) {
+          try {
+            const res = await withTimeout(fetch(ep, { cache: 'no-store' }), 2500);
+            const data = await res.json();
+            const ip = data.ip || data.query || data.ip_addr || null;
+            if (ip) return ip as string;
+          } catch {}
         }
-      } catch (error) {
-        // 如果获取失败，使用稳定的设备指纹
-        userIP = stableFingerprint;
-        console.log('IP service failed, using stable fingerprint:', userIP, error);
+        return null;
+      };
+
+      const local = await getLocalIp();
+      if (local) {
+        userIP = local;
+      } else {
+        const third = await getThirdPartyIp();
+        userIP = third || longFingerprint;
       }
 
       // 使用LeanCloud JavaScript SDK进行数据存储
