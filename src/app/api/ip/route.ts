@@ -18,11 +18,8 @@ function parseClientIp(headers: Headers): string | null {
 // 注意：项目使用静态导出（output: export），API 路由在构建期会被访问收集数据。
 // 由于静态导出不支持在构建时对动态 API 进行采集，这里直接返回 404，避免构建失败。
 export const dynamic = 'force-static';
-
 export async function GET() {
-  try {
-    return NextResponse.json({ ip: null }, { status: 404 });
-  }
+  return NextResponse.json({ ip: null }, { status: 404 });
 }
 
 
