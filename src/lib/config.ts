@@ -36,6 +36,7 @@ export const config = {
     github: "https://github.com/Zhaowy95",
     xiaohongshu: "https://www.xiaohongshu.com/user/profile/5c7f632d000000001600761a",
     wechat: `${basePath}/images/wechat-qr.png`,
+    subs: `${basePath}/wechatsubs.png`,
   },
   giscus: {
     repo: "guangzhengli/hugo-ladder-exampleSite",

@@ -6,10 +6,16 @@ import Image from "next/image";
 import count from 'word-count'
 import { config } from "@/lib/config";
 import { formatDate } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import WechatQRModal from "@/components/WechatQRModal";
+import SubsQRModal from "@/components/SubsQRModal";
 
 export default function Home() {
   const [selectedTag] = useState<string | undefined>();
+  const [showWechatModal, setShowWechatModal] = useState(false);
+  const [showSubsModal, setShowSubsModal] = useState(false);
+  const wechatIconRef = useRef<HTMLButtonElement>(null);
+  const subsIconRef = useRef<HTMLButtonElement>(null);
 
   const allBlogsSorted = allBlogs.sort((a: any, b: any) => {
     if (a.featured && !b.featured) return -1;
@@ -31,6 +37,7 @@ export default function Home() {
     { name: "X", key: "x" },
     { name: "小红书", key: "xiaohongshu" },
     { name: "公众号", key: "wechat" },
+    { name: "订阅", key: "subs" },
     { name: "GitHub", key: "github" },
   ]
     .map(item => ({
@@ -77,9 +84,23 @@ export default function Home() {
             {socialLinks.map((link) => (
               <div key={link.name} className="flex items-center">
                 {link.name === "公众号" ? (
-                  <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                  <button 
+                    ref={wechatIconRef}
+                    onClick={() => setShowWechatModal(true)}
+                    className="hover:opacity-80 transition-opacity cursor-pointer"
+                    aria-label="显示微信二维码"
+                  >
                     <Image src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wechat.png`} alt="公众号" width={24} height={24} className="w-6 h-6" />
-                  </a>
+                  </button>
+                ) : link.name === "订阅" ? (
+                  <button 
+                    ref={subsIconRef}
+                    onClick={() => setShowSubsModal(true)}
+                    className="hover:opacity-80 transition-opacity cursor-pointer"
+                    aria-label="显示订阅二维码"
+                  >
+                    <Image src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/subs-logo.png`} alt="订阅" width={24} height={24} className="w-6 h-6 object-contain" />
+                  </button>
                 ) : link.name === "GitHub" ? (
                   <a href={link.href} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                     <Image src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/github.png`} alt="GitHub" width={24} height={24} className="w-6 h-6" />
@@ -157,6 +178,20 @@ export default function Home() {
         </div>
       </div>
       </div>
+
+      {/* 微信二维码弹窗 */}
+      <WechatQRModal 
+        isOpen={showWechatModal}
+        onClose={() => setShowWechatModal(false)}
+        triggerRef={wechatIconRef}
+      />
+
+      {/* 订阅二维码弹窗 */}
+      <SubsQRModal 
+        isOpen={showSubsModal}
+        onClose={() => setShowSubsModal(false)}
+        triggerRef={subsIconRef}
+      />
     </>
   );
 }
