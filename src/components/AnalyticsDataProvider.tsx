@@ -174,9 +174,22 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
             return recordTime >= todayTimestamp.getTime();
           }).length;
 
-          // 计算独立访客（基于IP）
-          const allIPs = records.map((record: any) => record.get('ip')).filter(Boolean);
-          const uniqueVisitors = new Set(allIPs).size;
+          // 计算独立访客（联合去重：优先真实IP + UA，获取不到IP时使用指纹/占位）
+          const buildVisitorKey = (record: any) => {
+            const ip = (record.get('ip') || '').toString();
+            const ua = (record.get('userAgent') || '').toString();
+            if (!ip) {
+              // IP缺失时，退化为UA作为兜底（避免丢弃记录）
+              return `ua:${ua.slice(0, 100)}`;
+            }
+            // 以 fp- 开头的是稳定指纹，直接使用
+            if (ip.startsWith('fp-')) return ip;
+            // 真实IP：与UA组合，区分同一公网IP下的不同设备
+            return `${ip}|${ua.slice(0, 100)}`;
+          };
+
+          const allVisitorKeys = records.map((r: any) => buildVisitorKey(r)).filter(Boolean);
+          const uniqueVisitors = new Set(allVisitorKeys).size;
 
           // 计算页面级统计
           const pageStats = {
@@ -207,16 +220,31 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
             }
           });
 
-          // 计算各页面独立访客
-          const homepageIPs = new Set(records.filter((r: any) => r.get('path') === '/' || r.get('path') === '').map((r: any) => r.get('ip')).filter(Boolean));
-          const blogListIPs = new Set(records.filter((r: any) => r.get('path') === '/blog').map((r: any) => r.get('ip')).filter(Boolean));
-          const analyticsIPs = new Set(records.filter((r: any) => r.get('path') === '/analytics').map((r: any) => r.get('ip')).filter(Boolean));
-          const guestbookIPs = new Set(records.filter((r: any) => r.get('path') === '/guestbook').map((r: any) => r.get('ip')).filter(Boolean));
-          const writeIPs = new Set(records.filter((r: any) => r.get('path') === '/write').map((r: any) => r.get('ip')).filter(Boolean));
+          // 计算各页面独立访客（使用联合去重键）
+          const homepageIPs = new Set(records
+            .filter((r: any) => r.get('path') === '/' || r.get('path') === '')
+            .map((r: any) => buildVisitorKey(r))
+            .filter(Boolean));
+          const blogListIPs = new Set(records
+            .filter((r: any) => r.get('path') === '/blog')
+            .map((r: any) => buildVisitorKey(r))
+            .filter(Boolean));
+          const analyticsIPs = new Set(records
+            .filter((r: any) => r.get('path') === '/analytics')
+            .map((r: any) => buildVisitorKey(r))
+            .filter(Boolean));
+          const guestbookIPs = new Set(records
+            .filter((r: any) => r.get('path') === '/guestbook')
+            .map((r: any) => buildVisitorKey(r))
+            .filter(Boolean));
+          const writeIPs = new Set(records
+            .filter((r: any) => r.get('path') === '/write')
+            .map((r: any) => buildVisitorKey(r))
+            .filter(Boolean));
           const otherIPs = new Set(records.filter((r: any) => {
             const path = r.get('path') || '';
             return path.startsWith('/blog/') || (path !== '/' && path !== '/blog' && path !== '/analytics' && path !== '/guestbook' && path !== '/write');
-          }).map((r: any) => r.get('ip')).filter(Boolean));
+          }).map((r: any) => buildVisitorKey(r)).filter(Boolean));
 
           pageStats.homepage.uniqueVisitors = homepageIPs.size;
           pageStats.blogList.uniqueVisitors = blogListIPs.size;
@@ -255,7 +283,7 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
               const browserIPs = new Set(
                 records
                   .filter((r: any) => r.get('deviceType') === deviceType && r.get('detailedBrowser') === browser)
-                  .map((r: any) => r.get('ip'))
+                  .map((r: any) => buildVisitorKey(r))
                   .filter(Boolean)
               );
               detailedBrowserStats[deviceTypeKey][browser].uniqueVisitors = browserIPs.size;
@@ -281,7 +309,7 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
           // 计算文章独立访客
           Object.keys(blogViews).forEach(slug => {
             const blogRecords = records.filter((r: any) => r.get('type') === 'blog_view' && r.get('blogSlug') === slug);
-            const uniqueIPs = new Set(blogRecords.map((r: any) => r.get('ip')).filter(Boolean));
+            const uniqueIPs = new Set(blogRecords.map((r: any) => buildVisitorKey(r)).filter(Boolean));
             blogViews[slug].uniqueViews = uniqueIPs.size;
           });
 
@@ -295,7 +323,7 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
             });
             blogViews[slug].todayViews = todayBlogRecords.length;
             
-            const todayBlogIPs = new Set(todayBlogRecords.map((r: any) => r.get('ip')).filter(Boolean));
+            const todayBlogIPs = new Set(todayBlogRecords.map((r: any) => buildVisitorKey(r)).filter(Boolean));
             blogViews[slug].todayUniqueViews = todayBlogIPs.size;
           });
 
@@ -328,7 +356,7 @@ function AnalyticsDataProviderInternal({ children }: { children: React.ReactNode
               return recordTime >= startOfDay && recordTime <= endOfDay;
             });
             
-            const dayIPs = new Set(dayRecords.map((r: any) => r.get('ip')).filter(Boolean));
+            const dayIPs = new Set(dayRecords.map((r: any) => buildVisitorKey(r)).filter(Boolean));
             
             // 使用本地时间格式化，避免UTC时区转换问题
             const year = date.getFullYear();
