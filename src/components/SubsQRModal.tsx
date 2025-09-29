@@ -6,7 +6,7 @@ import Image from "next/image";
 interface SubsQRModalProps {
   isOpen: boolean;
   onClose: () => void;
-  triggerRef?: React.RefObject<HTMLElement>;
+  triggerRef?: React.RefObject<HTMLButtonElement | null>;
 }
 
 export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModalProps) {
