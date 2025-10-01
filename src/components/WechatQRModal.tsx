@@ -67,6 +67,36 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
     };
   }, [isOpen, onClose]);
 
+  // 使用 visualViewport + 回退实时定位弹窗
+  useEffect(() => {
+    if (!isOpen) return;
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    const reposition = () => {
+      if (!triggerRef?.current) return;
+      const rect = triggerRef.current.getBoundingClientRect();
+      const pageTop = vv?.pageTop ?? window.pageYOffset ?? window.scrollY ?? document.documentElement.scrollTop ?? 0;
+      const pageLeft = vv?.pageLeft ?? window.pageXOffset ?? window.scrollX ?? document.documentElement.scrollLeft ?? 0;
+      const top = Math.round(rect.bottom + pageTop + 4);
+      const left = Math.round(rect.left + pageLeft + rect.width / 2);
+      const el = document.getElementById('wechat-modal-pos');
+      if (el) {
+        el.style.top = `${top}px`;
+        el.style.left = `${left}px`;
+      }
+    };
+    reposition();
+    vv?.addEventListener('scroll', reposition);
+    vv?.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, { passive: true });
+    window.addEventListener('resize', reposition);
+    return () => {
+      vv?.removeEventListener('scroll', reposition);
+      vv?.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition);
+      window.removeEventListener('resize', reposition);
+    };
+  }, [isOpen, triggerRef]);
+
   if (!shouldRender) return null;
 
   return (
@@ -82,13 +112,10 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
         className={`absolute bg-transparent transform transition-all duration-300 ease-in-out ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
+        id="wechat-modal-pos"
         style={{
-          top: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + (window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0) + 4)}px` : 
-            '50%',
-          left: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().left + (window.pageXOffset || window.scrollX || document.documentElement.scrollLeft || 0) + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
-            '50%',
+          top: triggerRef?.current ? '0px' : '50%',
+          left: triggerRef?.current ? '0px' : '50%',
           transform: triggerRef?.current ? 'translateX(-50%)' : 'translate(-50%, -50%)',
           width: '200px', // 固定宽度，避免覆盖背景
           height: '200px'  // 固定高度，避免覆盖背景
