@@ -114,7 +114,7 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
         }`}
         style={{
           top: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + (window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0) + 4)}px` : 
+            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + (window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0) + 2)}px` : 
             '50%',
           left: triggerRef?.current ? 
             `${Math.round(triggerRef.current.getBoundingClientRect().left + (window.pageXOffset || window.scrollX || document.documentElement.scrollLeft || 0) + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
