@@ -72,17 +72,12 @@ export default function EyeProtectionMode() {
       }`}
       style={{
         position: 'fixed',
-        // 先放一个兜底位置，真正的位置在下面 visualViewport 同步中设置
         bottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
         right: '1rem',
         zIndex: 2147483647,
-        // 避免受祖先 transform 影响
         transform: 'translateZ(0)',
-        // 防止按钮被其他元素遮挡
-        pointerEvents: 'auto',
-        // 提升在微信浏览器中的固定表现
         willChange: 'transform',
-        // 确保按钮始终可见
+        pointerEvents: 'auto',
         minHeight: '48px',
         minWidth: '48px'
       }}
@@ -101,56 +96,5 @@ export default function EyeProtectionMode() {
     </button>
   );
 
-  // 使用一个全屏固定容器，确保任何情况下都相对可见视口贴边
-  const container = (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 2147483646,
-        pointerEvents: 'none',
-      }}
-    >
-      <div
-        id="eye-protection-anchor"
-        style={{
-          position: 'fixed',
-          right: 0,
-          bottom: 0,
-          pointerEvents: 'none',
-        }}
-      />
-      <div style={{ position: 'fixed', pointerEvents: 'none' }}>
-        {button}
-      </div>
-    </div>
-  );
-
-  // 同步按钮到 visualViewport 的右下角
-  if (typeof window !== 'undefined' && (window as any).visualViewport) {
-    const vv = (window as any).visualViewport as VisualViewport;
-    const sync = () => {
-      const offsetTop = vv.pageTop || 0;
-      const offsetLeft = vv.pageLeft || 0;
-      const btn = document.querySelector('#eye-protection-anchor') as HTMLElement | null;
-      const buttonEl = document.querySelector('button[title="' + (isEnabled ? '关闭护眼模式' : '开启护眼模式') + '"]') as HTMLElement | null;
-      if (btn && buttonEl) {
-        const bottomPadding = 16; // 1rem
-        const rightPadding = 16;  // 1rem
-        const safeBottom = (Number(getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-bottom)')) || 0);
-        const finalBottom = offsetTop + vv.height - bottomPadding - safeBottom;
-        const finalRight = offsetLeft + vv.width - rightPadding;
-        buttonEl.style.position = 'fixed';
-        buttonEl.style.pointerEvents = 'auto';
-        buttonEl.style.left = `${finalRight - buttonEl.offsetWidth}px`;
-        buttonEl.style.top = `${finalBottom - buttonEl.offsetHeight}px`;
-      }
-    };
-    // 初次同步与事件监听
-    requestAnimationFrame(sync);
-    vv.addEventListener('scroll', sync);
-    vv.addEventListener('resize', sync);
-  }
-
-  return createPortal(container, document.body);
+  return createPortal(button, document.body);
 }

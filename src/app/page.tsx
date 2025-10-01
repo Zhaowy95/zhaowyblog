@@ -70,7 +70,7 @@ export default function Home() {
       />
       <div className="max-w-3xl mx-auto px-4 py-8">
       {/* 个人介绍部分 */}
-      <div className="mb-16 space-y-6">
+      <div className="mb-8 space-y-6">
         <div className="text-left">
           <h1 className="text-4xl font-bold mb-3">{config.site.title}</h1>
           <p className="text-md text-gray-600 mb-2">{config.author.bio}</p>

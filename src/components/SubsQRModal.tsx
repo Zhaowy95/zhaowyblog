@@ -112,10 +112,13 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
         className={`absolute bg-transparent transform transition-all duration-300 ease-in-out ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
-        id="subs-modal-pos"
         style={{
-          top: triggerRef?.current ? '0px' : '50%',
-          left: triggerRef?.current ? '0px' : '50%',
+          top: triggerRef?.current ? 
+            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + (window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0) + 4)}px` : 
+            '50%',
+          left: triggerRef?.current ? 
+            `${Math.round(triggerRef.current.getBoundingClientRect().left + (window.pageXOffset || window.scrollX || document.documentElement.scrollLeft || 0) + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
+            '50%',
           transform: triggerRef?.current ? 'translateX(-50%)' : 'translate(-50%, -50%)',
           width: '200px', // 固定宽度，避免覆盖背景
           height: '200px'  // 固定高度，避免覆盖背景
