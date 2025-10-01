@@ -3,13 +3,23 @@
 import { useState, useEffect } from "react";
 
 export default function EyeProtectionMode() {
-  const [isEnabled, setIsEnabled] = useState(true); // 默认开启
+  const [isEnabled, setIsEnabled] = useState<boolean | null>(null); // 初始为null，表示未设置
 
   useEffect(() => {
-    // 每次刷新页面都强制开启护眼模式
-    setIsEnabled(true);
-    document.body.classList.add("eye-protection-mode");
-    localStorage.setItem("eye-protection-mode", "true");
+    // 从缓存中读取护眼模式状态
+    const savedMode = localStorage.getItem("eye-protection-mode");
+    
+    if (savedMode === "true") {
+      setIsEnabled(true);
+      document.body.classList.add("eye-protection-mode");
+    } else if (savedMode === "false") {
+      setIsEnabled(false);
+      document.body.classList.remove("eye-protection-mode");
+    } else {
+      // 如果没有缓存记录，默认为非护眼模式
+      setIsEnabled(false);
+      document.body.classList.remove("eye-protection-mode");
+    }
 
     // 微信浏览器特殊处理
     const isWechatBrowser = /MicroMessenger/i.test(navigator.userAgent);
@@ -43,6 +53,11 @@ export default function EyeProtectionMode() {
       localStorage.setItem("eye-protection-mode", "false");
     }
   };
+
+  // 如果状态为null，不渲染按钮
+  if (isEnabled === null) {
+    return null;
+  }
 
   return (
     <button

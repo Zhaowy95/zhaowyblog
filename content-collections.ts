@@ -12,6 +12,7 @@ const blogs = defineCollection({
     summary: z.string().optional(),
     keywords: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
+    coverImage: z.string().optional(),
   }),
   transform: async (document) => {
     return {

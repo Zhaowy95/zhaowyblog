@@ -32,15 +32,20 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
   }, [isOpen]);
 
   // 处理背景点击关闭
-  const handleBackdropClick = () => {
-    // 点击任何区域都关闭弹窗，除了图片本身
-    onClose();
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    // 只有点击背景区域才关闭弹窗，点击内容区域不关闭
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
   };
 
   // 处理触摸事件（微信浏览器优化）
   const handleTouchEnd = (e: React.TouchEvent) => {
-    e.preventDefault();
-    onClose();
+    // 只有触摸背景区域才关闭弹窗，触摸内容区域不关闭
+    if (e.target === e.currentTarget) {
+      e.preventDefault();
+      onClose();
+    }
   };
 
   // 处理ESC键关闭
@@ -51,24 +56,14 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
       }
     };
 
-    // 微信浏览器全局点击监听器
-    const handleGlobalClick = () => {
-      if (isOpen) {
-        onClose();
-      }
-    };
+    // 移除全局点击监听器，改为只在背景点击时关闭
 
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
-      // 延迟添加全局点击监听器，避免立即触发
-      setTimeout(() => {
-        document.addEventListener('click', handleGlobalClick, true);
-      }, 100);
     }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('click', handleGlobalClick, true);
     };
   }, [isOpen, onClose]);
 
@@ -81,11 +76,10 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
       }`}
       onClick={handleBackdropClick}
       onTouchEnd={handleTouchEnd}
-      onMouseDown={handleBackdropClick}
     >
-      {/* 弹窗内容 - 透明背景 */}
+      {/* 弹窗内容 - 精确尺寸，避免覆盖背景 */}
       <div 
-        className={`absolute bg-transparent max-w-xs w-full mx-4 transform transition-all duration-300 ease-in-out sm:max-w-sm ${
+        className={`absolute bg-transparent transform transition-all duration-300 ease-in-out ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         style={{
@@ -95,22 +89,22 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
           left: triggerRef?.current ? 
             `${triggerRef.current.getBoundingClientRect().left + window.scrollX + (triggerRef.current.getBoundingClientRect().width / 2)}px` : 
             '50%',
-          transform: triggerRef?.current ? 'translateX(-50%)' : 'translate(-50%, -50%)'
+          transform: triggerRef?.current ? 'translateX(-50%)' : 'translate(-50%, -50%)',
+          width: '200px', // 固定宽度，避免覆盖背景
+          height: '200px'  // 固定高度，避免覆盖背景
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 内容区域 */}
-        <div className="p-3 sm:p-4 text-center">
-          <div className="relative">
-            <Image
-              src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wechatsubs.png`}
-              alt="订阅二维码"
-              width={200}
-              height={200}
-              className="w-32 h-32 sm:w-40 sm:h-40 mx-auto rounded-lg shadow-md"
-              priority
-            />
-          </div>
+        {/* 内容区域 - 精确尺寸 */}
+        <div className="w-full h-full flex items-center justify-center">
+          <Image
+            src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wechatsubs.png`}
+            alt="订阅二维码"
+            width={200}
+            height={200}
+            className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg shadow-md"
+            priority
+          />
         </div>
       </div>
     </div>

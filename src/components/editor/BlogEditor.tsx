@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import SimpleMarkdownEditor from "./SimpleMarkdownEditor";
 
 interface BlogPost {
@@ -12,6 +13,7 @@ interface BlogPost {
   status: "draft" | "published";
   featured: boolean;
   tags: string;
+  coverImage: string;
 }
 
 export default function BlogEditor() {
@@ -24,6 +26,7 @@ export default function BlogEditor() {
     status: "draft",
     featured: false,
     tags: "",
+    coverImage: "",
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
@@ -72,10 +75,14 @@ export default function BlogEditor() {
     setPost(prev => ({ ...prev, tags: e.target.value }));
   };
 
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPost(prev => ({ ...prev, coverImage: e.target.value }));
+  };
+
 
   const saveDraft = async () => {
-    if (!post.title.trim() || !post.content.trim()) {
-      setSaveStatus("标题和内容不能为空");
+    if (!post.title.trim() || !post.content.trim() || !post.coverImage.trim()) {
+      setSaveStatus("标题、内容和封面图不能为空");
       return;
     }
 
@@ -107,8 +114,8 @@ export default function BlogEditor() {
   };
 
   const publishPost = async () => {
-    if (!post.title.trim() || !post.content.trim()) {
-      setSaveStatus("标题和内容不能为空");
+    if (!post.title.trim() || !post.content.trim() || !post.coverImage.trim()) {
+      setSaveStatus("标题、内容和封面图不能为空");
       return;
     }
 
@@ -132,6 +139,7 @@ date: "${post.date}"
 summary: "${post.summary || ''}"
 featured: ${post.featured || false}
 tags: [${tagsArray.map((tag: string) => `"${tag}"`).join(', ')}]
+coverImage: "${post.coverImage}"
 ---
 
 ${post.content}`;
@@ -227,6 +235,38 @@ ${post.content}`;
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        {/* 封面图输入 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            博客封面图 *
+          </label>
+          <input
+            type="url"
+            value={post.coverImage}
+            onChange={handleCoverImageChange}
+            placeholder="请输入封面图URL（必填）"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {/* 封面图预览 */}
+          {post.coverImage && (
+            <div className="mt-3">
+              <p className="text-sm text-gray-600 mb-2">封面图预览：</p>
+              <div className="relative w-32 h-24 border border-gray-300 rounded-md overflow-hidden">
+                <Image
+                  src={post.coverImage}
+                  alt="封面图预览"
+                  width={128}
+                  height={96}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 标签输入 */}

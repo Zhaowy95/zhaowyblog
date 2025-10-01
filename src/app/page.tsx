@@ -3,12 +3,11 @@
 import { allBlogs } from "content-collections";
 import Link from "next/link";
 import Image from "next/image";
-import count from 'word-count'
 import { config } from "@/lib/config";
-import { formatDate } from "@/lib/utils";
 import { useState, useRef } from "react";
 import WechatQRModal from "@/components/WechatQRModal";
 import SubsQRModal from "@/components/SubsQRModal";
+import BlogCard from "@/components/BlogCard";
 
 export default function Home() {
   const [selectedTag] = useState<string | undefined>();
@@ -122,49 +121,13 @@ export default function Home() {
 
       {/* 文章列表 */}
       <div className="space-y-8">
-        {filteredBlogs.slice(0, 5).map((blog: any) => (
-            <article key={blog.slug} className="group">
-              <div className="flex flex-col space-y-2 transition-transform group-hover:translate-x-1">
-                <Link href={`/blog/${blog.slug}`} className="block">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold underline underline-offset-4 group-hover:text-blue-600 transition-colors">
-                      {blog.title}
-                    </h2>
-                    <span className="text-sm text-gray-500">
-                      {formatDate(blog.date)} · {count(blog.content)} 字
-                    </span>
-                  </div>
-                  <p className="text-gray-600 line-clamp-2">
-                    {blog.summary}
-                  </p>
-                </Link>
-                {/* 标签放在摘要下面 */}
-                {((blog.tags && blog.tags.length > 0) || (blog.keywords && blog.keywords.length > 0)) && (
-                  <div className="flex gap-1 flex-wrap">
-                    {blog.tags && blog.tags.map((tag: string, index: number) => (
-                      <Link
-                        key={`tag-${index}`}
-                        href={`/blog?tag=${encodeURIComponent(tag)}`}
-                        className="px-2 py-1 text-xs rounded whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-blue-500 hover:text-white transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {tag}
-                      </Link>
-                    ))}
-                    {blog.keywords && blog.keywords.map((keyword: string, index: number) => (
-                      <Link
-                        key={`keyword-${index}`}
-                        href={`/blog?tag=${encodeURIComponent(keyword)}`}
-                        className="px-2 py-1 text-xs rounded whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-blue-500 hover:text-white transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {keyword}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </article>
+        {filteredBlogs.slice(0, 5).map((blog: any, index: number) => (
+          <BlogCard 
+            key={blog.slug} 
+            blog={blog} 
+            index={index}
+            showAll={false}
+          />
         ))}
         
         {/* 查看更多链接 */}

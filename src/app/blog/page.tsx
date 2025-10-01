@@ -1,10 +1,8 @@
 "use client";
 
 import { allBlogs } from "content-collections";
-import Link from "next/link";
-import count from 'word-count'
-import { formatDate } from "@/lib/utils";
 import TagList from "@/components/ui/TagList";
+import BlogCard from "@/components/BlogCard";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -51,58 +49,16 @@ function BlogPageContent() {
         <TagList onTagClick={handleTagClick} selectedTag={selectedTag} />
       </div>
 
-      {/* 文章列表 */}
+      {/* 文章列表 - 使用统一的卡片组件 */}
       <div className="space-y-8">
-        {filteredBlogs.map((blog: any) => (
-          <article 
+        {filteredBlogs.map((blog: any, index: number) => (
+          <BlogCard 
             key={blog.slug} 
-            className=""
-          >
-            <Link href={`/blog/${blog.slug}`}>
-              <div className="flex flex-col space-y-2">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold underline underline-offset-4">
-                    {blog.title}
-                  </h2>
-                  <span className="text-sm text-gray-500">
-                    {formatDate(blog.date)} · {count(blog.content)} 字
-                  </span>
-                </div>
-                <p className="text-gray-600 line-clamp-2">
-                  {blog.summary}
-                </p>
-                {/* 显示所有标签（包括tags和keywords） */}
-                {((blog.tags && blog.tags.length > 0) || (blog.keywords && blog.keywords.length > 0)) && (
-                  <div className="flex flex-wrap gap-1">
-                    {blog.tags && blog.tags.map((tag: string, index: number) => (
-                      <span 
-                        key={`tag-${index}`} 
-                        className={`px-2 py-1 text-xs rounded ${
-                          selectedTag === tag 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    {blog.keywords && blog.keywords.map((keyword: string, index: number) => (
-                      <span 
-                        key={`keyword-${index}`} 
-                        className={`px-2 py-1 text-xs rounded ${
-                          selectedTag === keyword 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Link>
-          </article>
+            blog={blog} 
+            index={index}
+            showAll={true}
+            selectedTag={selectedTag}
+          />
         ))}
       </div>
     </div>

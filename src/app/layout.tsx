@@ -53,18 +53,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link 
-          rel="preload" 
-          href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.1.0/style.css" 
-          as="style" 
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600;700;900&display=swap" 
+          rel="stylesheet" 
         />
-        <noscript>
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.1.0/style.css" />
-        </noscript>
         <style>
           {`
             body {
-              font-family: "LXGW WenKai Lite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+              font-family: "Noto Serif SC", "Source Han Serif SC", "思源宋体", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", serif;
+              font-weight: 400;
+              line-height: 1.6;
+            }
+            
+            /* 思源宋体字体优化 */
+            * {
+              font-family: "Noto Serif SC", "Source Han Serif SC", "思源宋体", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", serif;
             }
             
             /* 微信浏览器优化样式 */
@@ -181,14 +186,6 @@ export default function RootLayout({
             }
           `}
         </style>
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.1.0/style.css';
-            document.head.appendChild(link);
-          `
-        }} />
         <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
         <link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml" />
         <link rel="alternate" type="application/json" title="JSON" href="/feed.json" />
