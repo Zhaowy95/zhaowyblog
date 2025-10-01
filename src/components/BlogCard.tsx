@@ -30,7 +30,7 @@ export default function BlogCard({ blog, selectedTag }: BlogCardProps) {
         <div className="md:hidden">
           {/* 封面图 */}
           {blog.coverImage && (
-            <div className="relative w-full aspect-video">
+            <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
               <Image
                 src={blog.coverImage}
                 alt={blog.title}
@@ -88,7 +88,7 @@ export default function BlogCard({ blog, selectedTag }: BlogCardProps) {
         <div className="hidden md:block">
           {/* 封面图 */}
           {blog.coverImage && (
-            <div className="relative w-full aspect-video">
+            <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
               <Image
                 src={blog.coverImage}
                 alt={blog.title}
