@@ -113,11 +113,12 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         style={{
+          // 父级为 fixed 背景遮罩，子级为 absolute，使用 viewport 坐标，不要叠加滚动偏移
           top: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + (window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0) + 2)}px` : 
+            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + 2)}px` : 
             '50%',
           left: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().left + (window.pageXOffset || window.scrollX || document.documentElement.scrollLeft || 0) + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
+            `${Math.round(triggerRef.current.getBoundingClientRect().left + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
             '50%',
           transform: triggerRef?.current ? 'translateX(-50%)' : 'translate(-50%, -50%)',
           width: '200px', // 固定宽度，避免覆盖背景
