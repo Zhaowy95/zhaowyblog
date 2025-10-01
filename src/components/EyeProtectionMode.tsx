@@ -23,6 +23,7 @@ export default function EyeProtectionMode() {
     }
 
     const wechatCheck = /MicroMessenger/i.test(navigator.userAgent);
+    console.log('WeChat browser detected:', wechatCheck, 'User agent:', navigator.userAgent);
     setIsWechatBrowser(wechatCheck);
 
     if (wechatCheck) {
@@ -55,6 +56,8 @@ export default function EyeProtectionMode() {
   useEffect(() => {
     if (!mounted || !isWechatBrowser) return;
 
+    console.log('Creating iframe for WeChat browser');
+
     // 创建 iframe 内容
     const iframeContent = `
       <!DOCTYPE html>
@@ -73,6 +76,7 @@ export default function EyeProtectionMode() {
               padding: 0;
               background: transparent;
               overflow: hidden;
+              pointer-events: none;
             }
             .eye-protection-button {
               position: fixed;
@@ -89,6 +93,7 @@ export default function EyeProtectionMode() {
               transition: all 0.3s ease;
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
               z-index: 2147483647;
+              pointer-events: auto;
             }
             .eye-protection-button.enabled {
               background-color: #10b981;
@@ -166,13 +171,14 @@ export default function EyeProtectionMode() {
       height: 100vh;
       border: none;
       background: transparent;
-      pointer-events: none;
+      pointer-events: auto;
       z-index: 2147483647;
     `;
     
     iframe.srcdoc = iframeContent;
     iframeRef.current = iframe;
     document.body.appendChild(iframe);
+    console.log('Iframe created and appended to body');
 
     // 监听来自 iframe 的消息
     const handleMessage = (event: MessageEvent) => {
