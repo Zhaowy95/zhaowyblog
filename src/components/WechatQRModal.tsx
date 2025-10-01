@@ -107,7 +107,7 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
       onClick={handleBackdropClick}
       onTouchEnd={handleTouchEnd}
     >
-      {/* 弹窗内容 - 精确尺寸，避免覆盖背景 */}
+      {/* 弹窗内容 - 精确尺寸，顶部紧贴 icon 底部 */}
       <div 
         className={`absolute bg-transparent transform transition-all duration-300 ease-in-out ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
@@ -121,19 +121,19 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
             `${Math.round(triggerRef.current.getBoundingClientRect().left + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
             '50%',
           transform: triggerRef?.current ? 'translateX(-50%)' : 'translate(-50%, -50%)',
-          width: '200px', // 固定宽度，避免覆盖背景
-          height: '200px'  // 固定高度，避免覆盖背景
+          width: '160px',
+          height: '160px'
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 内容区域 - 精确尺寸 */}
-        <div className="w-full h-full flex items-center justify-center">
+        {/* 内容区域 - 去掉内边距与居中，避免产生额外间距 */}
+        <div className="w-full h-full">
           <Image
             src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wehcat-click.png`}
             alt="微信二维码"
-            width={200}
-            height={200}
-            className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg shadow-md"
+            width={160}
+            height={160}
+            className="w-40 h-40 rounded-lg shadow-md"
             priority
           />
         </div>
