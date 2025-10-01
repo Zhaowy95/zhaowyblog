@@ -76,11 +76,10 @@ export default function EyeProtectionMode() {
           isEnabled ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
         }`}
         style={{
-          position: 'fixed',
-          right: '16px',
-          bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
-          transform: 'translateZ(0)',
-          willChange: 'transform',
+          // 由 JS 用 top/left 进行绝对定位（相对上层固定容器），不再使用 transform 平移
+          position: 'absolute',
+          top: '0px',
+          left: '0px',
           pointerEvents: 'auto',
           minHeight: '48px',
           minWidth: '48px'
@@ -119,14 +118,13 @@ export default function EyeProtectionMode() {
       const height = vv?.height ?? window.innerHeight;
       const offsetLeft = vv?.offsetLeft ?? 0;
       const offsetTop = vv?.offsetTop ?? 0;
-      // 使用可见视口的偏移与尺寸，锚定到右下角
-      const x = offsetLeft + width - rightPadding - el.offsetWidth;
-      const y = offsetTop + height - bottomPadding - safeBottom - el.offsetHeight;
-      el.style.left = '0px';
-      el.style.top = '0px';
+      // 使用可见视口的偏移与尺寸，锚定到右下角（纯 top/left，避免 transform 抖动）
+      const x = Math.round(offsetLeft + width - rightPadding - el.offsetWidth);
+      const y = Math.round(offsetTop + height - bottomPadding - safeBottom - el.offsetHeight);
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
       el.style.right = 'auto';
       el.style.bottom = 'auto';
-      el.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
     };
 
     const schedule = () => {
