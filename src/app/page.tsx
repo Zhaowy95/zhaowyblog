@@ -120,7 +120,7 @@ export default function Home() {
       </div>
 
       {/* 文章列表 */}
-      <div className="space-y-8">
+      <div className="space-y-8 mt-6">
         {filteredBlogs.slice(0, 5).map((blog: any, index: number) => (
           <BlogCard 
             key={blog.slug} 

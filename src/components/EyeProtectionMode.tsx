@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 export default function EyeProtectionMode() {
   const [isEnabled, setIsEnabled] = useState<boolean | null>(null); // 初始为null，表示未设置
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // 从缓存中读取护眼模式状态
     const savedMode = localStorage.getItem("eye-protection-mode");
     
@@ -54,12 +57,12 @@ export default function EyeProtectionMode() {
     }
   };
 
-  // 如果状态为null，不渲染按钮
-  if (isEnabled === null) {
+  // 如果状态为null或未挂载，不渲染按钮
+  if (isEnabled === null || !mounted) {
     return null;
   }
 
-  return (
+  const button = (
     <button
       onClick={toggleEyeProtection}
       className={`fixed bottom-4 right-4 z-50 p-3 rounded-full shadow-lg transition-all duration-300 ${
@@ -71,11 +74,13 @@ export default function EyeProtectionMode() {
         position: 'fixed',
         bottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
         right: '1rem',
-        zIndex: 9999,
-        // 确保在移动端固定在视图右下角
-        transform: 'none',
+        zIndex: 2147483647,
+        // 避免受祖先 transform 影响
+        transform: 'translateZ(0)',
         // 防止按钮被其他元素遮挡
         pointerEvents: 'auto',
+        // 提升在微信浏览器中的固定表现
+        willChange: 'transform',
         // 确保按钮始终可见
         minHeight: '48px',
         minWidth: '48px'
@@ -94,4 +99,6 @@ export default function EyeProtectionMode() {
       )}
     </button>
   );
+
+  return createPortal(button, document.body);
 }
