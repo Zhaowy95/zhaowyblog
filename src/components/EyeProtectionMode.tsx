@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 export default function EyeProtectionMode() {
   const [isEnabled, setIsEnabled] = useState<boolean | null>(null); // 初始为null，表示未设置
   const [mounted, setMounted] = useState(false);
+  const hideTimerRef = useRef<number | null>(null);
+  const [isHidingForWechatToolbar, setIsHidingForWechatToolbar] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -80,6 +82,7 @@ export default function EyeProtectionMode() {
           position: 'absolute',
           top: '0px',
           left: '0px',
+          visibility: isHidingForWechatToolbar ? 'hidden' : 'visible',
           pointerEvents: 'auto',
           minHeight: '48px',
           minWidth: '48px'
@@ -146,6 +149,40 @@ export default function EyeProtectionMode() {
       window.removeEventListener('resize', schedule);
     };
   }, [mounted, isEnabled]);
+
+  // 微信浏览器：地址栏/工具栏动画期间临时隐藏，动画结束再显示（避免视觉错觉）
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const isWechat = /MicroMessenger/i.test(navigator.userAgent);
+    if (!isWechat) return;
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+
+    const handleStart = () => {
+      setIsHidingForWechatToolbar(true);
+      if (hideTimerRef.current) {
+        window.clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = null;
+      }
+      // 动画结束后再显示（经验值 300ms，可按需调整）
+      hideTimerRef.current = window.setTimeout(() => {
+        setIsHidingForWechatToolbar(false);
+      }, 320);
+    };
+
+    vv?.addEventListener('resize', handleStart);
+    vv?.addEventListener('scroll', handleStart);
+    window.addEventListener('resize', handleStart);
+
+    return () => {
+      vv?.removeEventListener('resize', handleStart);
+      vv?.removeEventListener('scroll', handleStart);
+      window.removeEventListener('resize', handleStart);
+      if (hideTimerRef.current) {
+        window.clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = null;
+      }
+    };
+  }, []);
 
   if (!mounted || isEnabled === null) return null;
   return createPortal(floating, document.body);
