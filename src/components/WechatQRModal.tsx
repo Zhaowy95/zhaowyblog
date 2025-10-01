@@ -84,10 +84,10 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
         }`}
         style={{
           top: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + window.scrollY + 4)}px` : 
+            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + (window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0) + 4)}px` : 
             '50%',
           left: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().left + window.scrollX + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
+            `${Math.round(triggerRef.current.getBoundingClientRect().left + (window.pageXOffset || window.scrollX || document.documentElement.scrollLeft || 0) + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
             '50%',
           transform: triggerRef?.current ? 'translateX(-50%)' : 'translate(-50%, -50%)',
           width: '200px', // 固定宽度，避免覆盖背景
