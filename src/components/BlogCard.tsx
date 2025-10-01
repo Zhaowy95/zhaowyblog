@@ -25,12 +25,12 @@ export default function BlogCard({ blog, selectedTag }: BlogCardProps) {
 
   return (
     <article className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300">
-      <Link href={`/blog/${blog.slug}`}>
+      <Link href={`/blog/${blog.slug}`} className="block">
         {/* 移动端：上下结构 */}
         <div className="md:hidden">
           {/* 封面图 */}
           {blog.coverImage && (
-            <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+            <div className="relative w-full overflow-hidden" style={{ paddingTop: '56.25%' }}>
               <Image
                 src={blog.coverImage}
                 alt={blog.title}
@@ -42,7 +42,7 @@ export default function BlogCard({ blog, selectedTag }: BlogCardProps) {
           )}
           
           {/* 内容区域 - 适宜间距（去除限制以适配微信浏览器自适应高度） */}
-          <div className="px-3 py-4 flex flex-col">
+          <div className="px-3 py-4 flex flex-col relative z-10">
             {/* 标题 */}
             <h2 className="text-xl font-bold text-gray-900 mb-1 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
               {blog.title}
@@ -88,7 +88,7 @@ export default function BlogCard({ blog, selectedTag }: BlogCardProps) {
         <div className="hidden md:block">
           {/* 封面图 */}
           {blog.coverImage && (
-            <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+            <div className="relative w-full overflow-hidden" style={{ paddingTop: '56.25%' }}>
               <Image
                 src={blog.coverImage}
                 alt={blog.title}
@@ -100,7 +100,7 @@ export default function BlogCard({ blog, selectedTag }: BlogCardProps) {
           )}
           
           {/* 内容区域 - 适宜间距（去除限制以适配微信浏览器自适应高度） */}
-          <div className="px-4 py-6 flex flex-col">
+          <div className="px-4 py-6 flex flex-col relative z-10">
             {/* 标题 */}
             <h2 className="text-2xl font-bold text-gray-900 mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
               {blog.title}
