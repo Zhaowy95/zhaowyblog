@@ -67,29 +67,41 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
     };
   }, [isOpen, onClose]);
 
-  // 使用 visualViewport + 回退实时定位弹窗
+  // 使用 visualViewport 实时定位弹窗
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !triggerRef?.current) return;
+    
     const vv = (window as any).visualViewport as VisualViewport | undefined;
+    let raf = 0;
+    
     const reposition = () => {
-      if (!triggerRef?.current) return;
-      const rect = triggerRef.current.getBoundingClientRect();
-      const pageTop = vv?.pageTop ?? window.pageYOffset ?? window.scrollY ?? document.documentElement.scrollTop ?? 0;
-      const pageLeft = vv?.pageLeft ?? window.pageXOffset ?? window.scrollX ?? document.documentElement.scrollLeft ?? 0;
-      const top = Math.round(rect.bottom + pageTop + 4);
-      const left = Math.round(rect.left + pageLeft + rect.width / 2);
-      const el = document.getElementById('wechat-modal-pos');
-      if (el) {
-        el.style.top = `${top}px`;
-        el.style.left = `${left}px`;
-      }
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        if (!triggerRef?.current) return;
+        const rect = triggerRef.current.getBoundingClientRect();
+        const modal = document.getElementById('wechat-modal-pos');
+        if (modal) {
+          // 使用 viewport 坐标，紧贴 icon 底部
+          const top = Math.round(rect.bottom + 2);
+          const left = Math.round(rect.left + rect.width / 2);
+          modal.style.top = `${top}px`;
+          modal.style.left = `${left}px`;
+          modal.style.transform = 'translateX(-50%)';
+        }
+      });
     };
+    
+    // 初始定位
     reposition();
+    
+    // 监听 visualViewport 变化
     vv?.addEventListener('scroll', reposition);
     vv?.addEventListener('resize', reposition);
     window.addEventListener('scroll', reposition, { passive: true });
     window.addEventListener('resize', reposition);
+    
     return () => {
+      if (raf) cancelAnimationFrame(raf);
       vv?.removeEventListener('scroll', reposition);
       vv?.removeEventListener('resize', reposition);
       window.removeEventListener('scroll', reposition);
@@ -107,20 +119,13 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
       onClick={handleBackdropClick}
       onTouchEnd={handleTouchEnd}
     >
-      {/* 弹窗内容 - 精确尺寸，顶部紧贴 icon 底部 */}
+      {/* 弹窗内容 - 使用 visualViewport 实时定位 */}
       <div 
+        id="wechat-modal-pos"
         className={`absolute bg-transparent transform transition-all duration-300 ease-in-out ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         style={{
-          // 父级为 fixed 背景遮罩，子级为 absolute，使用 viewport 坐标，不要叠加滚动偏移
-          top: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().bottom + 2)}px` : 
-            '50%',
-          left: triggerRef?.current ? 
-            `${Math.round(triggerRef.current.getBoundingClientRect().left + (triggerRef.current.getBoundingClientRect().width / 2))}px` : 
-            '50%',
-          transform: triggerRef?.current ? 'translateX(-50%)' : 'translate(-50%, -50%)',
           width: '160px',
           height: '160px'
         }}
