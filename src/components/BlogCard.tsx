@@ -41,8 +41,8 @@ export default function BlogCard({ blog, selectedTag }: BlogCardProps) {
             </div>
           )}
           
-          {/* 内容区域 - 适宜间距 */}
-          <div className="px-3 py-4 flex flex-col justify-center overflow-hidden">
+          {/* 内容区域 - 适宜间距（去除限制以适配微信浏览器自适应高度） */}
+          <div className="px-3 py-4 flex flex-col">
             {/* 标题 */}
             <h2 className="text-xl font-bold text-gray-900 mb-1 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
               {blog.title}
@@ -99,8 +99,8 @@ export default function BlogCard({ blog, selectedTag }: BlogCardProps) {
             </div>
           )}
           
-          {/* 内容区域 - 适宜间距 */}
-          <div className="px-4 py-6 flex flex-col justify-center overflow-hidden">
+          {/* 内容区域 - 适宜间距（去除限制以适配微信浏览器自适应高度） */}
+          <div className="px-4 py-6 flex flex-col">
             {/* 标题 */}
             <h2 className="text-2xl font-bold text-gray-900 mb-2 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
               {blog.title}
