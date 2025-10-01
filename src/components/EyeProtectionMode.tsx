@@ -102,7 +102,7 @@ export default function EyeProtectionMode() {
     </div>
   );
 
-  // 使用 visualViewport 将按钮锚定到可见视图右下角（仅在尺寸变化时刷新，避免滚动跟随带来的抖动）
+  // 使用 visualViewport 将按钮锚定到可见视图右下角
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const vv = (window as any).visualViewport as VisualViewport | undefined;
@@ -117,9 +117,11 @@ export default function EyeProtectionMode() {
       const safeBottom = 0; // env(safe-area...) 已在 bottom 里处理
       const width = vv?.width ?? window.innerWidth;
       const height = vv?.height ?? window.innerHeight;
-      // 纯视口坐标，不再叠加 pageTop/pageLeft，避免滚动追踪造成抖动/丢失
-      const x = width - rightPadding - el.offsetWidth;
-      const y = height - bottomPadding - safeBottom - el.offsetHeight;
+      const offsetLeft = vv?.offsetLeft ?? 0;
+      const offsetTop = vv?.offsetTop ?? 0;
+      // 使用可见视口的偏移与尺寸，锚定到右下角
+      const x = offsetLeft + width - rightPadding - el.offsetWidth;
+      const y = offsetTop + height - bottomPadding - safeBottom - el.offsetHeight;
       el.style.left = '0px';
       el.style.top = '0px';
       el.style.right = 'auto';
@@ -134,12 +136,14 @@ export default function EyeProtectionMode() {
 
     // 初次定位
     schedule();
-    // 仅在尺寸变化时刷新，不监听 scroll
+    // 监听 visualViewport 滚动与尺寸变化（不监听 window.scroll）
+    vv?.addEventListener('scroll', schedule);
     vv?.addEventListener('resize', schedule);
     window.addEventListener('resize', schedule);
 
     return () => {
       if (raf) cancelAnimationFrame(raf);
+      vv?.removeEventListener('scroll', schedule);
       vv?.removeEventListener('resize', schedule);
       window.removeEventListener('resize', schedule);
     };
