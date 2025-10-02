@@ -101,17 +101,21 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
   if (!shouldRender) return null;
 
   return (
-    <div
-      className={`fixed inset-0 z-50 transition-all duration-300 ease-in-out ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-      onClick={handleBackdropClick}
-      onTouchEnd={handleTouchEnd}
-    >
-      {/* 弹窗内容 - 使用 visualViewport 实时定位 */}
+    <>
+      {/* 背景遮罩 */}
+      <div
+        className={`fixed inset-0 z-40 transition-all duration-300 ease-in-out ${
+          isVisible ? 'opacity-100' : 'opacity-0'
+        }`}
+        onClick={handleBackdropClick}
+        onTouchEnd={handleTouchEnd}
+        style={{ backgroundColor: 'transparent' }}
+      />
+      
+      {/* 弹窗内容 - 直接固定定位到页面 */}
       <div 
         id="subs-modal-pos"
-        className={`absolute bg-transparent transform transition-all duration-300 ease-in-out ${
+        className={`fixed bg-transparent transform transition-all duration-300 ease-in-out z-50 ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         style={{
@@ -132,6 +136,6 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }
