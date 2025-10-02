@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 
 interface SubsQRModalProps {
   isOpen: boolean;
@@ -12,38 +13,57 @@ interface SubsQRModalProps {
 export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModalProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const modalRef = useRef<HTMLDivElement>(null);
 
+  // 确保组件已挂载
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 计算弹窗位置
+  const calculatePosition = useCallback(() => {
+    if (!triggerRef?.current) return { top: 0, left: 0 };
+    
+    const rect = triggerRef.current.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    
+    return {
+      top: rect.bottom + scrollTop + 8, // icon底部 + 8px间距
+      left: rect.left + scrollLeft + rect.width / 2 // icon水平中心
+    };
+  }, [triggerRef]);
+
+  // 处理弹窗开关状态
   useEffect(() => {
     if (isOpen) {
+      // 计算位置
+      const newPosition = calculatePosition();
+      setPosition(newPosition);
+      
       setShouldRender(true);
-      // 延迟一帧确保DOM更新后再显示
-      requestAnimationFrame(() => {
+      // 延迟显示动画
+      const timer = setTimeout(() => {
         setIsVisible(true);
-      });
+      }, 10);
+      
+      return () => clearTimeout(timer);
     } else {
       setIsVisible(false);
-      // 等待动画完成后移除DOM元素
+      // 等待动画完成后移除DOM
       const timer = setTimeout(() => {
         setShouldRender(false);
-      }, 300); // 与CSS动画时间一致
+      }, 300);
       
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, calculatePosition]);
 
   // 处理背景点击关闭
   const handleBackdropClick = (e: React.MouseEvent) => {
-    // 只有点击背景区域才关闭弹窗，点击内容区域不关闭
     if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  // 处理触摸事件（微信浏览器优化）
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    // 只有触摸背景区域才关闭弹窗，触摸内容区域不关闭
-    if (e.target === e.currentTarget) {
-      e.preventDefault();
       onClose();
     }
   };
@@ -56,8 +76,6 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
       }
     };
 
-    // 移除全局点击监听器，改为只在背景点击时关闭
-
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
     }
@@ -67,75 +85,69 @@ export default function SubsQRModal({ isOpen, onClose, triggerRef }: SubsQRModal
     };
   }, [isOpen, onClose]);
 
-  // 简化弹窗定位逻辑
+  // 监听滚动和窗口大小变化，更新位置
   useEffect(() => {
-    if (!isOpen || !triggerRef?.current) return;
+    if (!isOpen) return;
     
-    const reposition = () => {
-      if (!triggerRef?.current) return;
-      const rect = triggerRef.current.getBoundingClientRect();
-      const modal = document.getElementById('subs-modal-pos');
-      if (modal) {
-        // 直接使用 getBoundingClientRect 坐标，紧贴 icon 底部
-        const top = Math.round(rect.bottom + 4);
-        const left = Math.round(rect.left + rect.width / 2);
-        modal.style.top = `${top}px`;
-        modal.style.left = `${left}px`;
-        modal.style.transform = 'translateX(-50%)';
-      }
+    const updatePosition = () => {
+      const newPosition = calculatePosition();
+      setPosition(newPosition);
     };
     
-    // 初始定位
-    reposition();
-    
-    // 监听窗口变化
-    window.addEventListener('scroll', reposition, { passive: true });
-    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', updatePosition, { passive: true });
+    window.addEventListener('resize', updatePosition);
     
     return () => {
-      window.removeEventListener('scroll', reposition);
-      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', updatePosition);
+      window.removeEventListener('resize', updatePosition);
     };
-  }, [isOpen, triggerRef]);
+  }, [isOpen, calculatePosition]);
 
-  if (!shouldRender) return null;
+  if (!shouldRender || !mounted) return null;
 
-  return (
+  const modalContent = (
     <>
       {/* 背景遮罩 */}
       <div
-        className={`fixed inset-0 z-40 transition-all duration-300 ease-in-out ${
+        className={`fixed inset-0 transition-opacity duration-300 ease-in-out ${
           isVisible ? 'opacity-100' : 'opacity-0'
         }`}
+        style={{ 
+          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          zIndex: 9998
+        }}
         onClick={handleBackdropClick}
-        onTouchEnd={handleTouchEnd}
-        style={{ backgroundColor: 'transparent' }}
       />
       
-      {/* 弹窗内容 - 直接固定定位到页面 */}
+      {/* 弹窗内容 */}
       <div 
-        id="subs-modal-pos"
-        className={`fixed bg-transparent transform transition-all duration-300 ease-in-out z-50 ${
+        ref={modalRef}
+        className={`absolute transition-all duration-300 ease-in-out ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         style={{
+          top: `${position.top}px`,
+          left: `${position.left}px`,
+          transform: 'translateX(-50%)',
           width: '160px',
-          height: '160px'
+          height: '160px',
+          zIndex: 9999
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 内容区域 - 去掉内边距与居中，避免产生额外间距 */}
-        <div className="w-full h-full">
+        <div className="w-full h-full bg-white rounded-lg shadow-lg overflow-hidden">
           <Image
             src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wechatsubs.png`}
             alt="订阅二维码"
             width={160}
             height={160}
-            className="w-40 h-40 rounded-lg shadow-md"
+            className="w-full h-full object-cover"
             priority
           />
         </div>
       </div>
     </>
   );
+
+  return createPortal(modalContent, document.body);
 }
