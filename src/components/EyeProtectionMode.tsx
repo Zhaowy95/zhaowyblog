@@ -53,50 +53,23 @@ export default function EyeProtectionMode() {
     }
   };
 
-  // 微信浏览器特殊处理：使用 visualViewport 实时定位
+  // 微信浏览器特殊处理：使用 CSS 变量和固定定位
   useEffect(() => {
-    if (!mounted || !isWechatBrowser || !buttonRef.current) return;
+    if (!mounted || !isWechatBrowser) return;
 
-    const vv = (window as any).visualViewport as VisualViewport | undefined;
-    let raf = 0;
-
-    const updatePosition = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        if (!buttonRef.current) return;
-        
-        const rightPadding = 16;
-        const bottomPadding = 16;
-        
-        // 使用 visualViewport 的可见区域坐标，不叠加 offset
-        const width = vv?.width ?? window.innerWidth;
-        const height = vv?.height ?? window.innerHeight;
-        
-        // 直接使用可见视口的右下角坐标
-        const x = Math.round(width - rightPadding - 48); // 48px 是按钮宽度
-        const y = Math.round(height - bottomPadding - 48); // 48px 是按钮高度
-        
-        buttonRef.current.style.left = `${x}px`;
-        buttonRef.current.style.top = `${y}px`;
-        buttonRef.current.style.right = 'auto';
-        buttonRef.current.style.bottom = 'auto';
-        buttonRef.current.style.position = 'fixed';
-      });
+    // 设置 CSS 变量用于微信浏览器的视口高度
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
-
-    // 初始定位
-    updatePosition();
     
-    // 监听 visualViewport 变化
-    vv?.addEventListener('scroll', updatePosition);
-    vv?.addEventListener('resize', updatePosition);
-    window.addEventListener('resize', updatePosition);
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
 
     return () => {
-      if (raf) cancelAnimationFrame(raf);
-      vv?.removeEventListener('scroll', updatePosition);
-      vv?.removeEventListener('resize', updatePosition);
-      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('orientationchange', setViewportHeight);
     };
   }, [mounted, isWechatBrowser]);
 
@@ -105,38 +78,45 @@ export default function EyeProtectionMode() {
   }
 
   const buttonContent = (
-    <button
-      ref={buttonRef}
-      onClick={toggleEyeProtection}
-      className={`p-3 rounded-full shadow-lg transition-all duration-300 ${
-        isEnabled ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-      }`}
+    <div
       style={{
         position: 'fixed',
-        right: isWechatBrowser ? 'auto' : '16px',
-        bottom: isWechatBrowser ? 'auto' : '16px',
-        width: '48px',
-        height: '48px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        right: '16px',
+        bottom: isWechatBrowser ? 'calc(16px + env(safe-area-inset-bottom, 0px))' : '16px',
         zIndex: 2147483647,
-        transform: 'translateZ(0)', // 强制GPU加速
+        transform: 'translateZ(0)',
         willChange: 'transform'
       }}
-      title={isEnabled ? "关闭护眼模式" : "开启护眼模式"}
     >
-      {isEnabled ? (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-      ) : (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-        </svg>
-      )}
-    </button>
+      <button
+        ref={buttonRef}
+        onClick={toggleEyeProtection}
+        className={`p-3 rounded-full shadow-lg transition-all duration-300 ${
+          isEnabled ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+        }`}
+        style={{
+          width: '48px',
+          height: '48px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+        title={isEnabled ? "关闭护眼模式" : "开启护眼模式"}
+      >
+        {isEnabled ? (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+          </svg>
+        )}
+      </button>
+    </div>
   );
 
   return createPortal(buttonContent, document.body);
