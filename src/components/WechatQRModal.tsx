@@ -129,8 +129,8 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
           top: `${position.top}px`,
           left: `${position.left}px`,
           transform: 'translateX(-50%)',
-          width: '160px',
-          height: '160px',
+          width: '120px',
+          height: '120px',
           zIndex: 9999
         }}
         onClick={(e) => e.stopPropagation()}
@@ -139,8 +139,8 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
           <Image
             src={`${process.env.NODE_ENV === 'production' ? '/zhaowyblog' : ''}/wehcat-click.png`}
             alt="微信二维码"
-            width={160}
-            height={160}
+            width={120}
+            height={120}
             className="w-full h-full object-cover"
             priority
           />
