@@ -67,43 +67,32 @@ export default function WechatQRModal({ isOpen, onClose, triggerRef }: WechatQRM
     };
   }, [isOpen, onClose]);
 
-  // 使用 visualViewport 实时定位弹窗
+  // 简化弹窗定位逻辑
   useEffect(() => {
     if (!isOpen || !triggerRef?.current) return;
     
-    const vv = (window as any).visualViewport as VisualViewport | undefined;
-    let raf = 0;
-    
     const reposition = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        if (!triggerRef?.current) return;
-        const rect = triggerRef.current.getBoundingClientRect();
-        const modal = document.getElementById('wechat-modal-pos');
-        if (modal) {
-          // 使用 viewport 坐标，紧贴 icon 底部
-          const top = Math.round(rect.bottom + 2);
-          const left = Math.round(rect.left + rect.width / 2);
-          modal.style.top = `${top}px`;
-          modal.style.left = `${left}px`;
-          modal.style.transform = 'translateX(-50%)';
-        }
-      });
+      if (!triggerRef?.current) return;
+      const rect = triggerRef.current.getBoundingClientRect();
+      const modal = document.getElementById('wechat-modal-pos');
+      if (modal) {
+        // 直接使用 getBoundingClientRect 坐标，紧贴 icon 底部
+        const top = Math.round(rect.bottom + 4);
+        const left = Math.round(rect.left + rect.width / 2);
+        modal.style.top = `${top}px`;
+        modal.style.left = `${left}px`;
+        modal.style.transform = 'translateX(-50%)';
+      }
     };
     
     // 初始定位
     reposition();
     
-    // 监听 visualViewport 变化
-    vv?.addEventListener('scroll', reposition);
-    vv?.addEventListener('resize', reposition);
+    // 监听窗口变化
     window.addEventListener('scroll', reposition, { passive: true });
     window.addEventListener('resize', reposition);
     
     return () => {
-      if (raf) cancelAnimationFrame(raf);
-      vv?.removeEventListener('scroll', reposition);
-      vv?.removeEventListener('resize', reposition);
       window.removeEventListener('scroll', reposition);
       window.removeEventListener('resize', reposition);
     };
