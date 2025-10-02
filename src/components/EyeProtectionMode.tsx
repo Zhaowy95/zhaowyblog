@@ -67,29 +67,27 @@ export default function EyeProtectionMode() {
         
         const rightPadding = 16;
         const bottomPadding = 16;
-        const safeBottom = 0;
         
-        // 使用 visualViewport 坐标
+        // 使用 visualViewport 的可见区域坐标，不叠加 offset
         const width = vv?.width ?? window.innerWidth;
         const height = vv?.height ?? window.innerHeight;
-        const offsetLeft = vv?.offsetLeft ?? 0;
-        const offsetTop = vv?.offsetTop ?? 0;
         
-        // 计算按钮位置
-        const x = Math.round(offsetLeft + width - rightPadding - 48); // 48px 是按钮宽度
-        const y = Math.round(offsetTop + height - bottomPadding - safeBottom - 48); // 48px 是按钮高度
+        // 直接使用可见视口的右下角坐标
+        const x = Math.round(width - rightPadding - 48); // 48px 是按钮宽度
+        const y = Math.round(height - bottomPadding - 48); // 48px 是按钮高度
         
         buttonRef.current.style.left = `${x}px`;
         buttonRef.current.style.top = `${y}px`;
         buttonRef.current.style.right = 'auto';
         buttonRef.current.style.bottom = 'auto';
+        buttonRef.current.style.position = 'fixed';
       });
     };
 
     // 初始定位
     updatePosition();
     
-    // 监听变化
+    // 监听 visualViewport 变化
     vv?.addEventListener('scroll', updatePosition);
     vv?.addEventListener('resize', updatePosition);
     window.addEventListener('resize', updatePosition);
